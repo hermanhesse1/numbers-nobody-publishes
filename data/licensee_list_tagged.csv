@@ -1,0 +1,101 @@
+id,licensee_name,block,what_it_is,trap,size_measure
+IN-001,Siemens S.A. de C.V.,A Siemens family,Mexican subsidiary of Siemens AG,Local entity vs group; Mexican private companies publish little,Local revenue and employees (not group)
+IN-002,SIEMENS HEALTHINEERS,A Siemens family,Separately listed group (Siemens Healthineers AG); no country given,Group or a local subsidiary? Name alone does not say,Group revenue and employees if matched to the AG
+IN-003,"Siemens Industry Software (Shanghai) Co., Ltd.",A Siemens family,Chinese subsidiary of Siemens software business,Chinese registry gives little financial data,Local revenue and employees
+IN-004,Siemens Ltd.,A Siemens family,Siemens Limited India; itself listed in Mumbai,Country blank; Siemens Ltd also exists in other countries; address is the only clue,Reported: own annual report
+IN-005,SIEMENS MOBILITY LIMITED,A Siemens family,UK subsidiary; files full accounts at Companies House,Not the global Mobility division,Reported: UK filing
+IN-006,Siemens Ltda.,A Siemens family,Brazilian subsidiary,Several Siemens entities in Brazil; limited disclosure,Local revenue and employees
+IN-007,Siemens Energy,A Siemens family,Separately listed group (Siemens Energy AG); no country or legal form,Group or local subsidiary? Not part of Siemens AG since 2020,Group figures if matched to the AG
+IN-008,"Siemens Gamesa Renewable Energy, S.A.",A Siemens family,Spanish company; delisted and now wholly owned by Siemens Energy,Overlaps with IN-007; last standalone figures are old,Reported but check the year
+IN-009,SIEMENS PTE. LTD.,A Siemens family,Singapore subsidiary,Accounts filed but behind a paywall,Local revenue and employees
+IN-010,Siemens Canada Limited,A Siemens family,Canadian subsidiary,Canadian private companies do not publish accounts,Local revenue and employees (estimate)
+IN-011,Fastenal Company,B Listed group,US listed company,Easy; the control case,Reported: annual report
+IN-012,Tata Consultancy Services Limited,B Listed group,Indian listed company; majority owned by Tata Sons,Is the licensee TCS or the wider Tata group?,Reported: annual report
+IN-013,Koc Holding A.S.,B Listed group,Turkish listed conglomerate,Holding company vs consolidated group: very different employee counts,Reported: consolidated figures
+IN-014,Kakao Corp.,B Listed group,Korean listed company,Parent-only vs consolidated figures,Reported: consolidated figures
+IN-090,Arcos Dorados Holdings Inc.,B Listed group,NYSE-listed McDonald's franchisee for Latin America; no country given,Incorporated offshore with HQ in Uruguay; franchise sales vs own revenue,Reported: annual report
+IN-015,Google Ireland Limited,C Local subsidiary of multinational,Irish subsidiary of Alphabet; books sales for a whole region,Revenue is huge relative to staff; revenue overstates local size,Reported: Irish filing; employees more honest than revenue
+IN-016,Yazaki Romania S.R.L.,C Local subsidiary of multinational,Romanian subsidiary of Yazaki (Japan),Contract manufacturer: many employees and modest revenue,Reported: Romanian filing
+IN-017,Nestle Pakistan Limited,C Local subsidiary of multinational,Pakistani subsidiary; itself listed locally,Not Nestle group,Reported: own annual report
+IN-018,Unilever Nigeria Plc,C Local subsidiary of multinational,Nigerian subsidiary; itself listed locally,Not Unilever group,Reported: own annual report
+IN-019,IKEA Industry Slovakia s.r.o.,C Local subsidiary of multinational,Slovak manufacturing subsidiary,IKEA Industry is not the retailer; Slovak registry publishes accounts,Reported: Slovak filing
+IN-020,Cargill Agricultura S.R.L.,C Local subsidiary of multinational,Romanian subsidiary of Cargill (US private),Trading company: very high revenue per employee,Reported: Romanian filing
+IN-021,Toyota Kirloskar Motor Private Limited,C Local subsidiary of multinational,Indian joint venture of Toyota and Kirloskar,A joint venture; Indian filings are paywalled,Local figures; partly reported in press
+IN-022,Mercedes-Benz Romania S.R.L.,C Local subsidiary of multinational,Romanian importer and distributor,Distributor: high revenue and few employees,Reported: Romanian filing
+IN-023,Toyota Motor Manufacturing (UK) Limited,C Local subsidiary of multinational,UK manufacturing subsidiary,Revenue is mostly sales to its own group,Reported: UK filing
+IN-024,Coca-Cola HBC Romania S.R.L.,C Local subsidiary of multinational,Romanian subsidiary of Coca-Cola HBC (not The Coca-Cola Company),Two different Coca-Cola parents,Reported: Romanian filing
+IN-025,Sandoz Group AG,D Recent spin-off,Swiss listed company spun out of Novartis in 2023,Short history; older figures are carve-out numbers,Reported: recent annual reports only
+IN-026,Solstice Advanced Materials,D Recent spin-off,Spun out of Honeywell in 2025,Very new entity; few full-year figures,Reported but check which year exists
+IN-027,"Amentum Holdings, Inc.",D Recent spin-off,Listed in 2024 after merging with part of Jacobs,Size changed sharply at the merger,Reported: post-merger figures only
+IN-028,WK Kellogg Co,D Recent spin-off,Spun out of Kellogg in 2023; since acquired by Ferrero,Easily confused with Kellanova or old Kellogg; now a subsidiary,Reported up to the acquisition
+IN-029,"Qnity Electronics, Inc.",D Recent spin-off,Spun out of DuPont in 2025,Very new; databases may not hold it yet,Reported but check which year exists
+IN-030,Banca Transilvania S.A.,E Bank or insurer,Romanian listed bank,Bank revenue is not turnover,Total assets or net banking income; employees
+IN-031,Shinhan Bank,E Bank or insurer,Korean bank; subsidiary of Shinhan Financial Group,Bank vs financial group,Total assets or operating income; employees
+IN-032,Credit Mutuel,E Bank or insurer,French cooperative banking group made of several federations,No single legal entity; which part is the licensee?,Net banking income; employees
+IN-033,LV=,E Bank or insurer,Trading name of Liverpool Victoria (UK mutual insurer),Name is a logo; hard to search,Premiums written; employees
+IN-034,HDI Global SE,E Bank or insurer,German industrial insurer; subsidiary of Talanx,Entity vs Talanx group,Premiums written; employees
+IN-035,The Wawanesa Mutual Insurance Company,E Bank or insurer,Canadian mutual insurer,Mutual: no shareholders but publishes an annual report,Premiums written; employees
+IN-036,Baillie Gifford & Co,F Investment firm,UK partnership managing investments,Partnership: limited accounts; assets managed dwarf revenue,Assets under management and fee income; employees
+IN-037,EQT AB,F Investment firm,Swedish listed private equity firm,Firm itself vs the companies its funds own,Fee revenue; own employees (not portfolio)
+IN-038,Ferd AS,F Investment firm,Norwegian family-owned investment company,Consolidated accounts mix in portfolio companies,Portfolio value; own employees
+IN-039,Temasek Holdings (Private) Limited,F Investment firm,Singapore state investment company,Revenue is not meaningful,Portfolio value; own employees
+IN-040,Bregal Investments,F Investment firm,Private equity arm of the family that owns C&A; no country given,Several Bregal entities in several countries,Assets under management; own employees
+IN-041,Goodman Group,F Investment firm,Australian listed property group,Stapled structure of several entities; owns and manages property,Reported revenue plus assets managed
+IN-042,P3 Logistic Parks,F Investment firm,European warehouse owner; owned by Singapore's GIC; no country given,Brand over many country entities,Rental income and property value
+IN-043,HUS Group,G Public body or non-profit,Helsinki university hospital system,Public body: funded by budget,Operating income or budget; employees
+IN-044,Transport for London,G Public body or non-profit,London public transport authority,Fares plus grants; many subsidiaries,Operating income; employees
+IN-045,Stadtwerke Muenchen GmbH,G Public body or non-profit,Munich city-owned utility company,A real company with real revenue despite public owner; spelling of Muenchen,Reported: annual report
+IN-046,NHS Greater Glasgow and Clyde,G Public body or non-profit,Scottish health board,No revenue in the commercial sense,Budget; employees
+IN-047,Port Authority of New York and New Jersey,G Public body or non-profit,US bi-state public agency,Not a company; not in any company registry,Operating revenue; employees
+IN-048,Institut Pasteur,G Public body or non-profit,French non-profit research foundation,Funded by grants and donations; international network of separate institutes,Budget; employees
+IN-049,Blue Origin,H Venture-backed private company,US private space company,No filings; press figures only,Employees from proxies; revenue very uncertain
+IN-050,"Anduril Industries, Inc.",H Venture-backed private company,US private defence company,No filings; revenue known only from leaks and funding news,Employees from proxies; revenue from press
+IN-051,Sierra Space Corporation,H Venture-backed private company,US private space company spun out of Sierra Nevada Corporation,Confusion with former parent,Employees from proxies
+IN-052,Helsing,H Venture-backed private company,German defence software company,Legal name differs (Helsing GmbH or SE); German filings lag,Employees from proxies; revenue small vs valuation
+IN-053,Mistral AI,H Venture-backed private company,French software company,Valuation is not revenue; growing fast so any figure dates quickly,Employees from proxies; revenue from press
+IN-054,DRUID AI,H Venture-backed private company,Romanian-founded software company,Romanian entity files accounts but the group may sit abroad,Reported for Romanian entity; group estimated
+IN-055,FintechOS,H Venture-backed private company,Romanian-founded software company,Romanian entity files accounts but the parent is abroad,Reported for Romanian entity; group estimated
+IN-056,Anysphere,H Venture-backed private company,US company behind the Cursor coding tool,Known by product name not legal name; extreme revenue per employee,Employees from proxies; revenue from press
+IN-057,Isar Aerospace,H Venture-backed private company,German rocket company,Little or no revenue yet,Employees; funding raised rather than revenue
+IN-058,Tekever,H Venture-backed private company,Portuguese drone maker,Several group entities; Portuguese accounts obtainable,Employees; revenue from filings or press
+IN-059,Lovable,H Venture-backed private company,Swedish software company,Legal name differs; growing so fast that year matters a lot,Employees; revenue from press or Swedish filing
+IN-060,OLIVIER'S BAKERY LTD,I Micro business,UK small company,Micro accounts show no turnover,Estimate from proxies
+IN-061,MARGOT BAKERY LIMITED,I Micro business,UK small company,Micro accounts show no turnover,Estimate from proxies
+IN-062,ZAITUN BAKERY LTD,I Micro business,UK small company,May be dormant or dissolved,Check it operates; then proxies
+IN-063,ALIN PANIFICATIE S.R.L.,I Micro business,Romanian small bakery company,Possibly several companies with similar names,Reported: Romanian filing
+IN-064,PANIFICATIE MOLDOVA SRL,I Micro business,Small bakery company; no country given,Romania or Republic of Moldova? Moldova is also a Romanian region,Reported if Romanian
+IN-065,Tischlerei Thunemann KG,I Micro business,German joinery; limited partnership,Small partnerships publish almost nothing,Estimate from proxies
+IN-066,Tischlerei Moller e.K.,I Micro business,German joinery; registered sole trader,No published accounts; Moller may be Möller,Estimate from proxies
+IN-067,Gunter Buchbender Tischlerei,I Micro business,German joinery; unregistered sole trader,Possibly not in the commercial register at all; Gunter may be Günter,Estimate from proxies
+IN-077,Tischlerei Rose UG,I Micro business,German joinery; mini limited company,Publishes a tiny balance sheet only,Estimate from proxies
+IN-083,LEVE BAKERY LTD,I Micro business,UK small company,May be dormant or dissolved,Check it operates; then proxies
+IN-087,BAKERY BAKERY LTD,I Micro business,UK small company with a generic name,May be a shell that never traded,Check it operates at all
+IN-088,PANIFICATIE STRAJA S.R.L.,I Micro business,Romanian small bakery company,Check it is still active,Reported: Romanian filing
+IN-089,Tischlerei Holtzum UG,I Micro business,German joinery; mini limited company,Publishes a tiny balance sheet only,Estimate from proxies
+IN-068,DEGIRO,J Brand not a legal entity,Dutch broker brand; now part of flatexDEGIRO (Germany),Original Dutch company merged away,Parent figures or brand share
+IN-069,Uber Eats,J Brand not a legal entity,Division of Uber; no country given,No single entity; many local Uber companies,Segment figures from Uber's report
+IN-070,Nespresso,J Brand not a legal entity,Nestle business unit (Nestle Nespresso SA),Unit vs legal entity vs Nestle group,Segment sales from Nestle's report
+IN-071,Old Spice,J Brand not a legal entity,Procter & Gamble product brand,No entity and no employees of its own,Brand sales estimate or flag as not an entity
+IN-072,Currys PC World,J Brand not a legal entity,Former shop name of Currys plc (UK),Name retired in 2021; plc or its retail subsidiary?,Parent figures: Currys plc
+IN-073,Phoenix Group,K Ambiguous name,Unclear; no country given,UK insurer or German pharma wholesaler or others,Cannot size until matched
+IN-074,Orion Corporation,K Ambiguous name,Unclear; no country given,Finnish pharma or Korean food company or others,Cannot size until matched
+IN-075,Apex Group,K Ambiguous name,Unclear; no country given,Fund services firm or many unrelated companies,Cannot size until matched
+IN-076,National Grid,K Ambiguous name,Brooklyn address points to the US arm of the UK group,UK parent or US subsidiary? Address and brand disagree,US business figures vs group figures
+IN-078,Meridian,K Ambiguous name,Unclear; nothing but a common word,Dozens of candidates; probably unmatchable,None: flag as unmatched
+IN-079,Credit Suisse AG,L Dead or absorbed or renamed,Swiss bank merged into UBS in 2024,Entity no longer exists; who holds the licence now?,Last reported figures with date; or successor
+IN-080,"VMware, Inc.",L Dead or absorbed or renamed,US software company acquired by Broadcom in 2023,No longer reports separately,Last standalone figures with date
+IN-081,"ANSYS, Inc.",L Dead or absorbed or renamed,US software company acquired by Synopsys in 2025,No longer reports separately,Last standalone figures with date
+IN-082,Wirecard AG,L Dead or absorbed or renamed,German payments company; insolvent since 2020 after fraud,Reported figures were partly fictitious,None credible: flag
+IN-084,HELLA GmbH & Co. KGaA,L Dead or absorbed or renamed,German car parts maker; majority owned by Forvia; still listed,Still reports itself but is consolidated into its owner,Reported: own annual report
+IN-085,MIDGARD HOLDING,M Luxembourg holding,Luxembourg holding company,Probably no operations; who is behind it?,Size of owner or assets; possibly none
+IN-086,"STEYN HOLDING S.A., SPF",M Luxembourg holding,Luxembourg private family wealth company (SPF),By law cannot run a business; no revenue or staff,Size of owner or assets; possibly none
+IN-091,Ace Hardware Corporation,N Large private or cooperative,US cooperative owned by its shop owners,Cooperative revenue vs total sales of member shops,Reported: publishes financials
+IN-092,REWE Group,N Large private or cooperative,German cooperative retail group,Group name; not a legal entity,Reported: group annual report
+IN-093,MSC Mediterranean Shipping Company S.A.,N Large private or cooperative,Swiss family-owned shipping company,Publishes nothing; group spans ships and cruises and ports,Estimate from fleet capacity and peers
+IN-094,Rolex SA,N Large private or cooperative,Swiss watchmaker owned by a foundation,Publishes nothing,Estimate from industry reports
+IN-095,"Uline, Inc.",N Large private or cooperative,US family-owned distributor,No filings,Press estimates and proxies
+IN-096,"Southern Glazer's Wine & Spirits, LLC",N Large private or cooperative,US family-owned drinks distributor,No filings,Press estimates and proxies
+IN-097,"Reyes Holdings, L.L.C.",N Large private or cooperative,US family-owned food and drinks distributor,No filings; holding with several businesses,Press estimates and proxies
+IN-098,"Prime Healthcare Services, Inc.",N Large private or cooperative,US private hospital operator,Linked non-profit foundation holds some hospitals,Estimate from hospital and bed counts
+IN-099,"Drury Hotels Company, LLC",N Large private or cooperative,US family-owned hotel chain,No filings,Estimate from hotel and room counts
+IN-100,Perdue Farms Inc.,N Large private or cooperative,US family-owned food company,No filings,Press estimates and proxies
