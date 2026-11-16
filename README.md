@@ -1,12 +1,12 @@
 # Estimating revenue and headcount for a licensee list
 
-Take-home exercise: can annual revenue and employee count be produced, with defensible evidence, for a list of 100 licensee names?
+Project, checking wether annual revenue and employee count be produced, with defensible evidence, for a list of 100 licensee names?
 
 ## Repo layout
 
-- `data/` – the original list and my tagged version
-- `code/` – scripts
-- `output/` – the client file
+- `data/`: the original list and my tagged version
+- `code/`: scripts
+- `output/`: the client file
 
 ## Sample: what I chose and why
 
