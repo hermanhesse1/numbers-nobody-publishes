@@ -97,6 +97,28 @@ Every one of these events is public, dated and machine-readable: SEC 8-Ks, merge
 
 ## Part 5: The register
 
+**Proxy:** the best one from Part 2, the average headcount a company reports in its annual accounts. In Romania that is the employee line on the balance sheet filed with the Ministry of Finance.
+
+**The three numbers** (ONRC snapshot of 8 Dec 2025; [code/register.py](code/register.py), output in [output/register_counts.txt](output/register_counts.txt)):
+
+| | |
+|---|---|
+| Companies inside the line | **1,296,440** |
+| Share of the living register | **74.2%** (of 1,747,958) |
+| Largest industries (CAEN division) | **47 Retail trade** (476,708), **46 Wholesale trade** (371,164), **49 Land transport** (250,016) |
+
+**How I drew the lines:**
+1. **Living.** The register holds 4,111,567 companies. I count a company as living if it carries status `1048 funcţiune` (operating) and no status meaning struck off, dissolved, in liquidation, insolvent, suspended, or abandoned by its owners. That leaves 1,747,958. The dead statuses are matched by keyword against the official list of status codes, and the script prints the codes it keeps, so you can disagree code by code.
+2. **Inside the proxy.** The line is drawn on legal form, not activity code: what decides whether a headcount exists is whether the company must file accounts. Companies (SRL, SA, SNC, SCS, SCA), cooperatives and autonomous public companies are inside. Sole traders and family businesses (PFA, II, IF: 450,256 living) file a personal tax return with no headcount, so they are outside.
+3. **Industry.** The register lists *authorised* activities with no "main activity" flag, and stores them sorted by code. My first attempt, taking each company's first-listed code, therefore just picked its lowest code number, so I dropped it. Instead, a company counts in every division where it is authorised. Shares therefore add up to more than 100%, and the ranking tells you breadth of authorisation, not where revenue is earned. 289k companies have only the new Rev.3 (2025) codes and are counted under those. 109k have no activity code at all.
+
+**Where the line is weak:**
+- **The 74% is an upper bound.** Being required to file is not the same as filing, and filing is not the same as having staff. Many SRLs report 0 employees, and the register cannot show that.
+- **Some "living" companies are probably zombies.** 139,445 of the 1.30m carry "registered office expired" or "directors' mandate expired". Dropping them gives 1,156,995 (66.2%).
+- **Retail is inflated.** Romanian SRLs routinely add retail to their authorised activities just in case.
+- **What would turn the bound into a measured number:** joining on CUI to the Ministry of Finance file `web_uu_an2024` would show who actually filed with employees above zero.
+- **Reproducibility:** the data.gov.ro server sends no file size and silently cut two downloads short. The script's inputs should be checked against the advertised sizes (675 MB for `od_firme.csv`, 400 MB for `od_caen_autorizat.csv`).
+
 ## Cut list
 
 ## Debate topics
