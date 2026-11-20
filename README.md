@@ -105,21 +105,37 @@ Every one of these events is public, dated and machine-readable through SEC fili
 
 ## Part 5: The register
 
-The proxy is the best one from Part 2, the average headcount a company reports in its annual accounts. In Romania that is the employee line on the balance sheet filed with the Ministry of Finance. The counts come from the ONRC snapshot of 8 December 2025, using [code/register.py](code/register.py), with the output in [output/register_counts.txt](output/register_counts.txt).
+The proxy is capacity times revenue per unit of capacity at listed peers. It is the recipe behind both of Part 2's larger estimates: container slots for MSC and hotel rooms for Drury. The UK headcount tag was the most useful find in Part 2, but it is a reported figure rather than a proxy, so it does not belong here. Capacity only works where a company's size is a countable asset the public can see: a fleet, rooms, seats, beds or floor space. Counting delivery vans tells you nothing about a law firm, so the line is drawn on activity codes. The counts come from the ONRC snapshot of 8 December 2025, using [code/register.py](code/register.py), with the output in [output/register_counts.txt](output/register_counts.txt).
 
 | | |
 |---|---|
-| Companies inside the line | **1,296,440** |
-| Share of the living register | **74.2%** of 1,747,958 |
-| Largest industries by CAEN division | **Retail trade** 476,708, **wholesale trade** 371,164, **land transport** 250,016 |
+| Companies inside the line | **153,881**, within bounds of 85,567 and 491,769 |
+| Share of the living register | **8.8%** of 1,747,958, within bounds of 4.9% and 28.1% |
+| Largest industries | **Road transport** 104,216, **restaurants and bars** 31,201, **accommodation** 15,276 |
 
-I drew the lines in three steps. The register holds 4,111,567 companies, and I count one as living if it carries status `1048 funcţiune`, meaning operating, and no status for being struck off, dissolved, in liquidation, insolvent, suspended or abandoned by its owners. That leaves 1,747,958. The dead statuses are matched by keyword against the official list of status codes, and the script prints the codes it keeps so they can be challenged one by one.
+The first decision is who counts as alive. The register holds 4,111,567 companies, and I count one as living if it carries status `1048 funcţiune`, meaning operating, and no status for being struck off, dissolved, in liquidation, insolvent, suspended or abandoned by its owners. That leaves 1,747,958. The dead statuses are matched by keyword against the official list of status codes, and the code list sits in the script so it can be challenged code by code.
 
-The line itself is drawn on legal form rather than activity code, because what decides whether a headcount exists is whether the company has to file accounts. Companies such as SRLs and SAs are inside, along with cooperatives and autonomous public companies. Sole traders and family businesses, the PFA, II and IF forms, file a personal tax return with no headcount, so their 450,256 living members sit outside.
+The line maps each capacity unit to the activity codes where it is the natural measure:
 
-Industry was harder. The register lists authorised activities with no main-activity flag and stores them sorted by code, so my first attempt, taking each company's first-listed code, was really picking its lowest code number. Instead, a company counts in every division where it is authorised. The shares therefore add up to more than 100%, and the ranking shows breadth of authorisation rather than where revenue is earned. Some 289,000 companies carry only the new 2025 codes and are counted under those, and 109,000 have no activity code at all.
+- **Rooms or beds:** hotels, holiday lets and campsites.
+- **Seats or tables:** restaurants and bars.
+- **Licensed vehicles:** buses, taxis and road freight.
+- **Rolling stock, vessels and aircraft:** rail, water and air transport.
+- **Floor area:** warehousing.
+- **Beds:** hospitals.
 
-The line has four weaknesses. The 74% is an upper bound, because having to file is not the same as filing, and filing is not the same as having staff; many SRLs report no employees, which the register cannot show. Some of the living are probably zombies: 139,445 companies inside the line have an expired registered office or expired directors, and dropping them gives 1,156,995, or 66.2%. Retail is inflated, because Romanian companies routinely add it to their authorised activities just in case. Joining on the fiscal code to the Ministry of Finance file `web_uu_an2024` would turn the bound into a measured count. Finally, the data.gov.ro server sends no file size and silently cut two downloads short, so the inputs should be checked against the advertised sizes of 675 MB for `od_firme.csv` and 400 MB for `od_caen_autorizat.csv`.
+Most of these units have a public count somewhere: the tourism ministry's list of classified accommodation, the road transport authority's register of licensed vehicles, and ship and aircraft registers.
+
+The hard part is that the register lists the activities a company is authorised for, not its main activity, and the median living company holds four. Counting every company with a capacity code anywhere in its list gives 491,769, but that includes a great many firms that added transport or catering just in case. Counting only companies whose single code is a capacity code gives 85,567, which misses a hotel that is also authorised to run a restaurant and a gym. My line sits between the two: a company is inside when capacity activities make up at least half of its authorised codes. That gives 153,881. The industry ranking assigns each company to the capacity group holding most of its capacity codes, so unlike my first attempt the groups add up to the total.
+
+The line has four weaknesses:
+
+- **The recipe is only tested on part of it.** Part 2 tested it on accommodation and shipping, which is about 16,000 of the 154,000 companies. Road transport, two thirds of the line, rests on an untested revenue-per-vehicle figure, and much of it is single-vehicle taxi and haulage firms.
+- **Having a public count is not the same as finding one.** The registers named above were not opened for this count.
+- **Some companies are probably zombies.** 12,202 of those inside carry an expired registered office or expired directors; without them the line is 141,679.
+- **The downloads need checking.** The data.gov.ro server sends no file size and silently cut two downloads short, so the inputs should be checked against the advertised sizes of 675 MB for `od_firme.csv` and 400 MB for `od_caen_autorizat.csv`.
+
+My first attempt at this part drew the line on legal form, counting every company required to file accounts. That came to 74% of the living register, but it measured the register's mix of legal forms rather than where any proxy works, so I replaced it.
 
 ## Cut list
 
@@ -132,7 +148,7 @@ What I deliberately left out:
 - **Opening every primary document.** Several figures come from press coverage of a filing, such as Google Ireland and FintechOS, or from a jobs portal, as with NHS GGC, and are labelled that way.
 - **Sourcing the assumptions from memory**: hotel occupancy and room rates, utility customers per employee and revenue per bakery employee. They are marked in the code, and sourcing them is the next hour of work, not a reason to hide the derivations.
 - **Calibrating the ranges**, which are judgment rather than measured error, as the third debate explains.
-- **Parsing the Companies House bulk accounts and joining the register to `web_uu_an2024`.** Both are the obvious next steps and neither was needed to show the recipe works.
+- **Parsing the Companies House bulk accounts, and opening the accommodation and vehicle registers to check that the capacity counts in Part 5 can really be found.** Both are the obvious next steps and neither was needed to show the recipe works.
 
 ## Debate topics
 
