@@ -1,22 +1,26 @@
 """Part 5: how many Romanian register companies would the best Part 2 proxy reach?
 
-The proxy is the average headcount a company reports in its annual accounts
-(Part 2: UK iXBRL `AverageNumberEmployeesDuringPeriod`; the Romanian equivalent
-is the employee line on the balance sheet filed with the Ministry of Finance).
+The proxy is physical capacity times revenue per unit of capacity at listed
+peers. Part 2 used it for MSC, with container slots, and for Drury, with hotel
+rooms. It only works where a company's size is a countable asset that the
+public can see, so the line is drawn on activity codes.
 
 The line, step by step:
-  1. Living: the company carries status 1048 ("funcţiune", operating) and no
-     status that means dead, dying or dormant (keyword list below).
-  2. Inside the proxy: its legal form is one that must file annual accounts with
-     an employee count. Sole traders and family businesses (PFA, II, IF, PF, AF)
-     file a personal tax return instead, so they sit outside the line.
-  3. Industry: the division (first two digits) of the company's first-listed
-     CAEN Rev.2 authorised activity. The register lists authorised activities,
-     not a declared main activity, so this is an approximation.
+  1. Living: the company carries status 1048, "funcţiune" or operating, and no
+     status meaning dead, dying or dormant, matched by keyword against the
+     official list of status codes.
+  2. Capacity activity: the authorised CAEN codes in CAPACITY below, each with
+     the unit that would be counted.
+  3. Inside the line: capacity codes make up at least half of the company's
+     authorised codes. The register lists authorised activities with no main
+     activity flag, so this is the stand-in for "this is what the company does".
+     Two bounds are printed alongside: companies with a single code that is a
+     capacity code, and companies with a capacity code anywhere in their list.
+  4. Industry: the capacity group holding most of the company's capacity codes.
 
-Inputs (not committed; download from data.gov.ro into big_data/register/):
+Inputs, not committed, downloaded from data.gov.ro into big_data/register/:
   od_firme.csv, od_stare_firma.csv, od_caen_autorizat.csv,
-  nomenclator_stari_firma.csv, nomenclator_caen.csv
+  nomenclator_stari_firma.csv
 
 Run from the repo root:  python3 code/register.py
 """
@@ -37,22 +41,20 @@ DEAD_WORDS = ["radiat", "dizolv", "lichid", "faliment", "insolv", "întrerupere 
               "rezerv", "nu funcţionează la sediu"]
 DOUBTFUL = {"2069": "registered office expired", "2065": "directors' mandate expired"}
 
-FILES_ACCOUNTS = {"SRL", "SA", "SNC", "SCS", "SCA", "SC", "CA", "RA", "GIE", "GEIE",
-                  "SE", "SCE", "INCD", "OC", "OC1", "OC2", "OC3", "OC5", "OC7",
-                  "OCC", "OCM", "OCR"}
-TAX_RETURN_ONLY = {"PFA", "II", "IF", "PF", "AF"}
-
-# CAEN Rev.2 division names, only for the divisions printed in the results.
-DIVISION_NAMES = {
-    "01": "Crop and animal production", "41": "Construction of buildings",
-    "43": "Specialised construction", "45": "Motor vehicle trade and repair",
-    "46": "Wholesale trade", "47": "Retail trade", "49": "Land transport",
-    "56": "Food and beverage service", "62": "Computer programming and consultancy",
-    "68": "Real estate", "69": "Legal and accounting", "70": "Head offices and management consultancy",
-    "71": "Architecture and engineering", "73": "Advertising and market research",
-    "74": "Other professional activities", "82": "Office and business support",
-    "86": "Human health", "96": "Other personal services",
+# Capacity groups: CAEN codes from the 2008 and 2025 revisions, the unit counted,
+# and where that unit could be observed. Only accommodation and shipping were
+# tested in Part 2; the other groups extend the same recipe untested.
+GROUPS = {
+    "Accommodation": (["5510", "5520", "5530", "5590"], "rooms or beds"),
+    "Restaurants and bars": (["5610", "5611", "5630"], "seats or tables"),
+    "Road transport": (["4931", "4932", "4933", "4939", "4941"], "licensed vehicles"),
+    "Rail transport": (["4910", "4911", "4912", "4920"], "rolling stock"),
+    "Water transport": (["5010", "5020", "5030", "5040"], "vessels"),
+    "Air transport": (["5110", "5121"], "aircraft"),
+    "Warehousing": (["5210"], "floor area"),
+    "Hospitals": (["8610"], "beds"),
 }
+CAPACITY = {code: group for group, (codes, _) in GROUPS.items() for code in codes}
 
 
 def read(name, **kw):
@@ -61,58 +63,55 @@ def read(name, **kw):
 
 
 def main():
-    # --- statuses ---------------------------------------------------------
+    # --- living companies --------------------------------------------------
     nom = pd.read_csv(D / "nomenclator_stari_firma.csv", sep="|", dtype=str, encoding="cp1250")
-    nom["dead"] = nom["DENUMIRE"].str.lower().apply(lambda s: any(w in s for w in DEAD_WORDS))
-    dead_codes = set(nom.loc[nom["dead"], "COD"])
+    dead_codes = set(nom.loc[nom["DENUMIRE"].str.lower().apply(
+        lambda s: any(w in s for w in DEAD_WORDS)), "COD"])
 
     st = read("od_stare_firma.csv")
     by_co = st.groupby("COD_INMATRICULARE")["COD"].agg(set)
-    operating = by_co.apply(lambda s: OPERATING in s)
-    blocked = by_co.apply(lambda s: bool(s & dead_codes))
+    living_mask = by_co.apply(lambda s: OPERATING in s and not s & dead_codes)
     doubtful = by_co.apply(lambda s: bool(s & set(DOUBTFUL)))
-    living = by_co.index[operating & ~blocked]
 
-    # --- legal form -------------------------------------------------------
-    firme = read("od_firme.csv", usecols=["COD_INMATRICULARE", "FORMA_JURIDICA"])
-    firme = firme.drop_duplicates("COD_INMATRICULARE")
-    total_register = len(by_co)
-    alive = firme[firme["COD_INMATRICULARE"].isin(living)]
-    inside = alive[alive["FORMA_JURIDICA"].isin(FILES_ACCOUNTS)]
-    excluded_forms = alive["FORMA_JURIDICA"].value_counts()
+    firme = read("od_firme.csv", usecols=["COD_INMATRICULARE"])
+    in_firme = set(firme["COD_INMATRICULARE"])
+    living = set(by_co.index[living_mask]) & in_firme
+    n_living = len(living)
 
-    # --- industry ---------------------------------------------------------
-    # Codes are stored in ascending order and there is no "main activity" flag,
-    # so a company is counted in every division where it holds an authorised
-    # activity. Rev.2 codes are used; companies with only Rev.3 (2025) codes fall
-    # back to those (the two revisions share most 2-digit divisions).
+    # --- authorised activities --------------------------------------------
+    # Rev.2 codes where a company has them; companies with only Rev.3 (2025)
+    # codes are read from those instead.
     caen = read("od_caen_autorizat.csv")
-    caen = caen[caen["COD_INMATRICULARE"].isin(set(inside["COD_INMATRICULARE"]))]
-    caen = caen[caen["VER_CAEN_AUTORIZAT"].isin(["2", "3"])].copy()
-    caen["div"] = caen["COD_CAEN_AUTORIZAT"].str[:2]
+    caen = caen[caen["COD_INMATRICULARE"].isin(living) & caen["VER_CAEN_AUTORIZAT"].isin(["2", "3"])]
     has_rev2 = set(caen.loc[caen["VER_CAEN_AUTORIZAT"] == "2", "COD_INMATRICULARE"])
-    use = caen[(caen["VER_CAEN_AUTORIZAT"] == "2") | ~caen["COD_INMATRICULARE"].isin(has_rev2)]
-    pairs = use[["COD_INMATRICULARE", "div"]].drop_duplicates()
-    top = pairs["div"].value_counts()
-    n_coded = pairs["COD_INMATRICULARE"].nunique()
-    n_rev3_only = n_coded - len(has_rev2)
+    caen = caen[(caen["VER_CAEN_AUTORIZAT"] == "2") | ~caen["COD_INMATRICULARE"].isin(has_rev2)].copy()
+    caen["group"] = caen["COD_CAEN_AUTORIZAT"].map(CAPACITY)
 
-    n_alive, n_in = len(alive), len(inside)
-    n_doubt = int(doubtful[inside["COD_INMATRICULARE"]].sum())
-    print(f"register companies (with a status row):  {total_register:,}")
-    print(f"living (1048 and no dead/dormant status): {n_alive:,} "
-          f"(of which {len(living) - n_alive:,} living codes missing from od_firme)")
-    print(f"inside the proxy line:                    {n_in:,} = {n_in / n_alive:.1%} of living")
-    print(f"  of which flagged doubtful (2069/2065):  {n_doubt:,}  -> without them {n_in - n_doubt:,}")
-    print("living companies by legal form (top 10):")
-    for form, n in excluded_forms.head(10).items():
-        tag = "inside" if form in FILES_ACCOUNTS else ("tax return only" if form in TAX_RETURN_ONLY else "outside")
-        print(f"  {form or '(blank)':6} {n:>9,}  {tag}")
-    print(f"companies inside the line with an authorised activity: {n_coded:,} "
-          f"({n_rev3_only:,} Rev.3 only); with none: {n_in - n_coded:,}")
-    print("top industries inside the line (companies authorised in each division; one company can count in several):")
-    for d, n in top.head(6).items():
-        print(f"  {d} {DIVISION_NAMES.get(d, '?'):42} {n:>9,}  {n / n_in:.1%} of inside")
+    per_co = caen.groupby("COD_INMATRICULARE").agg(
+        n_codes=("COD_CAEN_AUTORIZAT", "size"), n_cap=("group", "count"))
+    any_cap = per_co[per_co["n_cap"] > 0]
+    single = per_co[(per_co["n_codes"] == 1) & (per_co["n_cap"] == 1)]
+    inside = per_co[per_co["n_cap"] / per_co["n_codes"] >= 0.5]
+
+    # Industry: the capacity group holding most of the company's capacity codes.
+    cap = caen[caen["COD_INMATRICULARE"].isin(inside.index) & caen["group"].notna()]
+    main_group = (cap.groupby(["COD_INMATRICULARE", "group"]).size()
+                  .reset_index(name="n").sort_values(["COD_INMATRICULARE", "n"], ascending=[True, False])
+                  .drop_duplicates("COD_INMATRICULARE").set_index("COD_INMATRICULARE")["group"])
+    top = main_group.value_counts()
+
+    n_in = len(inside)
+    n_doubt = int(doubtful.reindex(inside.index).fillna(False).sum())
+    print(f"register companies with a status:           {len(by_co):,}")
+    print(f"living, operating with no dead status:      {n_living:,}")
+    print(f"  with at least one authorised activity:    {len(per_co):,}")
+    print(f"inside the line, capacity >= half of codes: {n_in:,} = {n_in / n_living:.1%} of living")
+    print(f"  lower bound, single capacity code only:   {len(single):,} = {len(single) / n_living:.1%}")
+    print(f"  upper bound, any capacity code:           {len(any_cap):,} = {len(any_cap) / n_living:.1%}")
+    print(f"  inside but flagged doubtful (2069/2065):  {n_doubt:,} -> without them {n_in - n_doubt:,}")
+    print("industries inside the line, by main capacity group:")
+    for g, n in top.items():
+        print(f"  {g:22} {n:>8,}  {n / n_in:5.1%}  counted in {GROUPS[g][1]}")
 
 
 if __name__ == "__main__":
