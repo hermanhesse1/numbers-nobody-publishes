@@ -84,16 +84,23 @@ def drury_revenue():
 def kedny_employees():
     """Brooklyn Union Gas headcount as customers divided by customers per employee.
 
-    Customers: 1.3m in Brooklyn, Queens and Staten Island according to amNewYork,
-      which with Long Island's 0.6m matches the 1.9m the NY PSC gives for the two
-      National Grid gas companies together.
+    No longer used for the client file, because the utility's own filing reports
+    its headcount. Kept as the record of a test: how well does the proxy do on a
+    company whose real figure is known?
+
     Customers per employee at listed US gas utilities in 2024:
       Spire: 1.74m customers and 3,475 employees, about 500.
       Atmos Energy: 3.3m customers and 5,200 employees, about 635.
       Southwest Gas: 2.26m customers and 2,435 employees, about 927.
-      The midpoint uses the middle peer.
+    Tested on two other utilities, the middle ratio of 635 predicts ONE Gas at
+    3,620 staff against about 3,900, and NW Natural at 1,260 against about
+    1,400: 7% and 10% too low. On Brooklyn Union Gas, with 1,274,648 average
+    customers in 2023, it predicts about 2,000 staff against 1,464 reported, 37%
+    too high. The utility runs at about 871 customers per employee because much
+    of its work is done by National Grid's shared service company.
     """
-    return band(1.3e6 / 635, 1.3e6 / 927, 1.3e6 / 500)
+    customers = 1_274_648
+    return band(customers / 635, customers / 927, customers / 500)
 
 
 def margot_revenue():
@@ -230,10 +237,10 @@ ROWS = [
     dict(id="IN-076", scope="The Brooklyn Union Gas Company, trading as National Grid NY",
          rev_metric="Operating revenues", rev_basis="REPORTED", cur="USD", period="FY to 31 Mar 2025",
          rev=band(2376.9, 2376.9, 2376.9),
-         emp=band(round(kedny["mid"], -1), round(kedny["low"], -1), round(kedny["high"], -1)), emp_basis="PROXY", emp_period="2025",
-         source="Revenue from Brooklyn Union Gas financial statements published by National Grid; 1.3m customers from amNewYork; customers per employee from 2024 filings and reports of Spire, Atmos Energy and Southwest Gas",
-         derivation="Headcount is 1.3m customers divided by customers per employee at three listed gas utilities: about 500 at Spire, 635 at Atmos Energy and 927 at Southwest Gas. The only published headcount, 3,651, is decades old and was discarded.",
-         how_wrong="Revenue is exact. Headcount could be about 30% below or 25% above the midpoint, because the three peers differ widely; a dense, unionised city network probably sits nearer the high end.",
+         emp=band(1464, 1464, 1464), emp_basis="REPORTED", emp_period="31 Dec 2023",
+         source="Revenue from Brooklyn Union Gas financial statements published by National Grid; headcount from the company's 2023 annual report to the New York Public Service Commission, page 77, Number of Gas Department Employees",
+         derivation="Both figures are read from filings. An earlier version estimated headcount from customers per employee at listed gas utilities and got about 2,000, 37% too high, because much of this utility's work is done by National Grid's shared service company.",
+         how_wrong="Both are exact as filed, but they cover different periods: revenue to March 2025 and headcount at December 2023. The headcount leaves out National Grid staff who work on this network from the shared service company.",
          action="Confirm which company signed, because National Grid plc would be about ten times larger."),
     dict(id="IN-086", scope="STEYN HOLDING S.à r.l., RCS B31697",
          rev_metric="none", rev_basis="NONE", cur="EUR", period="",
