@@ -68,7 +68,32 @@ Two checks ran on every figure.
 
 ## Part 3: The call (would I ship this?)
 
+**Not as one file. I would ship part of it, labelled.** The 10 revenue and 8 headcount figures read from filings I would put in front of the client's analyst today. That includes Margot Bakery's 13 staff, which comes from a filing even though its revenue is a proxy. The rest I would not ship for pricing:
+- **Proxy rows (MSC, Drury, Brooklyn Union headcount):** the arithmetic is shown, but key inputs are still my recalled assumptions, not sourced benchmarks. These are hotel occupancy and room prices, utility customers per employee, and MSC's "other businesses" slice. They are good enough to place a company in a tier, not to quote a number.
+- **Rows whose scope I chose:** Siemens Energy, Blue Origin, MSC, National Grid and Old Spice. The number is right for the entity I picked, and nobody yet knows whether that entity signed. Most of the error in this file is a scope error, not an arithmetic error.
+
+**What my checks cannot see:**
+1. **Whether the matched entity is the one on the contract.** Only the contract can settle that.
+2. **Errors my sources share.** Termene, Totalfirme and Targetare all mirror the same Ministry of Finance data, so three sources agreeing is really one source.
+3. **Age.** Several figures are 12–20 months old, and the base is moving (see Part 4).
+4. **Whether my ranges are honest.** There is no answer sheet, so a "±20%" is my judgment, not a measured error rate.
+
+**What I would do next, in order of value per hour:**
+1. **Ask the client for the counterparty name and address from each contract.** This fixes scope on ~40% of rows, more than any amount of research could.
+2. **Parse the free Companies House bulk iXBRL download.** That gives reported headcount for every UK licensee automatically.
+3. **Replace each recalled assumption with a sourced benchmark:** STR for hotels, utility 10-Ks for customers per employee.
+4. **Calibrate each proxy on companies that do report.** Run the rooms formula on listed hotel groups and the capacity formula on Hapag-Lloyd and Maersk. The measured error then becomes the range width, instead of my judgment.
+
 ## Part 4: The room (one insight the client didn't ask for)
+
+**The licensee list goes out of date, and both of the client's fears come from that one cause.** Using the list as it was sent, 15 of the 100 licensees have changed what they are since 2020:
+- **7 were absorbed into far larger groups:** VMware into Broadcom, ANSYS into Synopsys, Credit Suisse into UBS, WK Kellogg into Ferrero, HELLA into Forvia, Siemens Gamesa into Siemens Energy, DEGIRO into flatexDEGIRO.
+- **6 were carved out of larger parents:** Siemens Energy, Sandoz, Solstice, Amentum, Qnity, Sierra Space.
+- **2 were renamed or collapsed:** Currys PC World, Wirecard.
+
+The first group is the "small tier, multinational group" problem: the licensee was priced for what it was when it signed, and is now a subsidiary of a company many times its size. The second group is the reverse, and less obvious. A licence signed by the parent may now be used by a spun-off company that is a separate legal entity and was never priced at all. That is unlicensed use, not underpricing.
+
+Every one of these events is public, dated and machine-readable: SEC 8-Ks, merger notices, register changes. Most enterprise licences also carry an assignment or change-of-control clause, so each event is a contractual moment to re-paper the deal on the client's terms, not a renegotiation they would have to win cold. 15 in about six years is roughly 2.5% of the base a year. The list was probably built to be hard and overstates the true rate, but even a third of that, across a large base, is a steady stream of repricing triggers nobody is watching. The proposal: watch the licensee base for corporate events, not just for size, and reprice at the event rather than at renewal.
 
 ## Part 5: The register
 
