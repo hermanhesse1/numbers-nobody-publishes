@@ -1,0 +1,23 @@
+register companies (with a status row):  4,111,567
+living (1048 and no dead/dormant status): 1,747,958 (of which 74 living codes missing from od_firme)
+inside the proxy line:                    1,296,440 = 74.2% of living
+  of which flagged doubtful (2069/2065):  139,445  -> without them 1,156,995
+living companies by legal form (top 10):
+  SRL    1,282,885  inside
+  PFA      308,419  tax return only
+  II       114,739  tax return only
+  IF        27,098  tax return only
+  SA         7,332  inside
+  CA         2,791  inside
+  SC         1,686  inside
+  SNC        1,212  inside
+  N/A        1,189  outside
+  RA           171  inside
+companies inside the line with an authorised activity: 1,187,176 (288,853 Rev.3 only); with none: 109,264
+top industries inside the line (companies authorised in each division; one company can count in several):
+  47 Retail trade                                 476,708  36.8% of inside
+  46 Wholesale trade                              371,164  28.6% of inside
+  49 Land transport                               250,016  19.3% of inside
+  43 Specialised construction                     234,384  18.1% of inside
+  41 Construction of buildings                    179,939  13.9% of inside
+  68 Real estate                                  176,963  13.6% of inside
