@@ -26,61 +26,77 @@ def band(mid, low, high):
 
 # ---------------------------------------------------------------- proxy maths
 def msc_group_revenue():
-    """MSC group revenue 2024 (USD bn) = container + cruise + everything else.
+    """MSC group revenue 2024, in USD bn, as container plus cruise plus everything else.
 
-    Container: fleet capacity x revenue per TEU of capacity at listed peers.
-      Hapag-Lloyd liner 2024: $20.3bn on 2.346m TEU  -> $8,650/TEU
-      Maersk Ocean 2024:      $37.4bn on ~4.3m TEU   -> ~$8,700/TEU (capacity approx.)
-      MSC: 6.3m TEU in Jan 2025 after adding 0.69m during 2024 -> ~5.95m average.
-      Band $7,500-9,500/TEU: MSC charters more and its rate mix is unknown.
-    Cruise: 4.6m passengers (2024) x $1,500-2,200 per passenger
-      (mass-market pricing, below Carnival's ~$1,850; Carnival guest count recalled, unverified).
-    Other (terminals, MEDLOG, AGL Africa logistics, car carriers): $5-15bn.
-      Pure assumption, and the weakest piece of the sum.
+    Container: fleet capacity times revenue per TEU of capacity at listed peers.
+      Hapag-Lloyd liner shipping 2024: $20.3bn on 2.346m TEU, about $8,650 per TEU.
+      Maersk Ocean 2024: $37.4bn on 4.31m TEU, about $8,675 per TEU.
+      MSC had 6.3m TEU in January 2025 after adding 0.69m during 2024, so about
+      5.95m on average. The band of $7,500 to $9,500 allows for MSC chartering more
+      ships than its peers and an unknown rate mix; the band itself is not sourced.
+    Cruise: 4.6m passengers in 2024 times revenue per passenger. Carnival took
+      $25.0bn from 13.5m passengers, about $1,850 each, and Royal Caribbean $16.5bn
+      from 8.56m, about $1,930. MSC sells cheaper European cruises, so the midpoint
+      is set below both at $1,700, and the $1,500 floor is an assumption.
+    Other: terminals, MEDLOG road and rail logistics, Africa Global Logistics and
+      car carriers. Bolloré's African operations, the core of what MSC bought as
+      AGL, turned over about EUR 3.1bn in 2021 according to inforMARE, a single
+      source. The rest of the slice has no source, so the band of $3.5bn to $10bn
+      is wide on purpose.
     """
     teu_avg = 5.95  # million TEU
     container = band(teu_avg * 8650 / 1000, teu_avg * 7500 / 1000, teu_avg * 9500 / 1000)
-    cruise = band(4.6 * 1.80, 4.6 * 1.50, 4.6 * 2.20)
-    other = band(9.0, 5.0, 15.0)
+    cruise = band(4.6 * 1.70, 4.6 * 1.50, 4.6 * 1.93)
+    other = band(6.0, 3.5, 10.0)
     return {k: container[k] + cruise[k] + other[k] for k in ("mid", "low", "high")}
 
 
 def drury_revenue():
-    """Drury revenue (USD m) = rooms x 365 x occupancy x ADR, plus ~3% other.
+    """Drury revenue, in USD m, as hotels x rooms x 365 x occupancy x room rate, plus 3%.
 
-    Hotels: 150 ("more than 150", company About page).
-    Rooms per hotel: 160-210. A partial sample of 50 properties averages 208
-      rooms (Lodging Development), biased towards the newer, larger Plaza hotels.
-    Occupancy 70-80%, ADR $125-155: upper-midscale segment norms. These are
-      assumptions to be checked against STR data, not sourced figures.
+    Hotels: 130 to 150. The company says more than 150, which may include hotels
+      still being built; Lodging Magazine counts 130 operating.
+    Rooms per hotel: 160 to 210. A sample of 50 properties on Lodging Development
+      averages 208 rooms but leans towards the newer, larger Plaza hotels; the
+      160 floor is an assumption.
+    Occupancy: 61% to 72%. Upper-midscale hotels ran 61.4% in Colliers' Q4 2023
+      brand report, all US hotels 63.0% in 2024 according to CoStar, and Hilton's
+      system 72.1% in 2024. Drury's guest-satisfaction record suggests it sits
+      above its segment, so the midpoint is 66%.
+    Room rate: $128 to $159. Upper midscale averaged $128.26 in Colliers' Q4 2023
+      report and all US hotels $158.67 in 2024 according to CoStar.
     """
-    def rev(rooms_per_hotel, occ, adr):
-        return 150 * rooms_per_hotel * 365 * occ * adr * 1.03 / 1e6
+    def rev(hotels, rooms_per_hotel, occ, adr):
+        return hotels * rooms_per_hotel * 365 * occ * adr * 1.03 / 1e6
 
-    return band(rev(180, 0.75, 140), rev(160, 0.70, 125), rev(210, 0.80, 155))
+    return band(rev(140, 180, 0.66, 140), rev(130, 160, 0.61, 128), rev(150, 210, 0.72, 159))
 
 
 def kedny_employees():
-    """Brooklyn Union Gas headcount = customers / customers-per-employee.
+    """Brooklyn Union Gas headcount as customers divided by customers per employee.
 
-    Customers: 1.20-1.30m, our assumed share of the 1.9m that the NY PSC reports
-      for KEDNY and KEDLI together. The split is not sourced.
-    Customers per employee: 450-950, the range at US gas utilities (Spire, Atmos,
-      Southwest Gas). Peer ratios are recalled and need checking in their 10-Ks.
-      A dense, unionised urban network sits at the low (more staff) end.
+    Customers: 1.3m in Brooklyn, Queens and Staten Island according to amNewYork,
+      which with Long Island's 0.6m matches the 1.9m the NY PSC gives for the two
+      National Grid gas companies together.
+    Customers per employee at listed US gas utilities in 2024:
+      Spire: 1.74m customers and 3,475 employees, about 500.
+      Atmos Energy: 3.3m customers and 5,200 employees, about 635.
+      Southwest Gas: 2.26m customers and 2,435 employees, about 927.
+      The midpoint uses the middle peer.
     """
-    return band(1.25e6 / 650, 1.20e6 / 950, 1.30e6 / 450)
+    return band(1.3e6 / 635, 1.3e6 / 927, 1.3e6 / 500)
 
 
 def margot_revenue():
-    """Margot Bakery revenue (GBP m) = 13 employees x revenue per employee.
+    """Margot Bakery revenue, in GBP m, as 13 employees x revenue per employee.
 
-    13 average employees is REPORTED in the FY2025 micro accounts (iXBRL tag
-    AverageNumberEmployeesDuringPeriod). Revenue per employee for a UK artisan
-    bakery-cafe is assumed at GBP 35-70k (mid 50k); check against ONS ABS for
-    SIC 10.71 / 56.10.
+    The 13 average employees are reported in the FY2025 micro accounts under the
+    tag AverageNumberEmployeesDuringPeriod. Greggs took GBP 2.01bn in 2024 with
+    about 33,000 staff, roughly GBP 61,000 each, which sets the top of the band:
+    a single artisan bakery has none of Greggs' scale. The floor of GBP 35,000 and
+    the midpoint of GBP 48,000 are assumptions.
     """
-    return band(13 * 0.050, 13 * 0.035, 13 * 0.070)
+    return band(13 * 0.048, 13 * 0.035, 13 * 0.061)
 
 
 msc = msc_group_revenue()
@@ -177,8 +193,8 @@ ROWS = [
          rev=band(margot["mid"], margot["low"], margot["high"]),
          emp=band(13, 13, 13), emp_basis="REPORTED", emp_period="FY2025 average",
          source="Micro accounts filed at Companies House for FY2023 to FY2025, whose headcount tag reads 8, 13, 13 and 13 across the years shown",
-         derivation="The accounts report a headcount even though they leave out turnover. Revenue is 13 employees at GBP 35,000 to 70,000 each.",
-         how_wrong="Revenue is good to about 40%. The company is registered for property letting and shows no stock and GBP 4 in cash, so the tills may run through a sister company and the 13 staff may be all of the bakery that sits here.",
+         derivation="The accounts report a headcount even though they leave out turnover. Revenue is 13 employees at GBP 35,000 to 61,000 each. The top of that band is Greggs, which took GBP 2.01bn in 2024 with about 33,000 staff; the floor is an assumption.",
+         how_wrong="Revenue could be about 25% either side of the midpoint. The company is registered for property letting and shows no stock and GBP 4 in cash, so the tills may run through a sister company and the 13 staff may be all of the bakery that sits here.",
          action="None needed for tiering: with 13 staff it is a micro business either way."),
     dict(id="IN-063", scope="ALIN PANIFICATIE SRL",
          rev_metric="none", rev_basis="NONE", cur="RON", period="",
@@ -206,32 +222,32 @@ ROWS = [
          rev_metric="Operating revenues", rev_basis="REPORTED", cur="USD", period="FY to 31 Mar 2025",
          rev=band(2376.9, 2376.9, 2376.9),
          emp=band(round(kedny["mid"], -1), round(kedny["low"], -1), round(kedny["high"], -1)), emp_basis="PROXY", emp_period="2025",
-         source="Revenue from Brooklyn Union Gas financial statements published by National Grid; headcount derived in code/estimates.py",
-         derivation="Headcount is 1.20m to 1.30m customers divided by 450 to 950 customers per employee. The only published headcount, 3,651, is decades old and was discarded.",
-         how_wrong="Revenue is exact. Headcount could be between two thirds and one and a half times the midpoint, and both of its inputs are assumptions.",
+         source="Revenue from Brooklyn Union Gas financial statements published by National Grid; 1.3m customers from amNewYork; customers per employee from 2024 filings and reports of Spire, Atmos Energy and Southwest Gas",
+         derivation="Headcount is 1.3m customers divided by customers per employee at three listed gas utilities: about 500 at Spire, 635 at Atmos Energy and 927 at Southwest Gas. The only published headcount, 3,651, is decades old and was discarded.",
+         how_wrong="Revenue is exact. Headcount could be about 30% below or 25% above the midpoint, because the three peers differ widely; a dense, unionised city network probably sits nearer the high end.",
          action="Confirm which company signed, because National Grid plc would be about ten times larger."),
     dict(id="IN-086", scope="STEYN HOLDING S.à r.l., RCS B31697",
          rev_metric="none", rev_basis="NONE", cur="EUR", period="",
          rev=None, emp=None, emp_basis="NONE", emp_period="",
-         source="Eulerpool lists the company as lapsed, last updated in December 2020",
-         derivation="A holding company with no operations has no meaningful revenue or staff. It may also no longer exist, which contradicts the status of unknown recorded in Part 1.",
+         source="Luxembourg Business Register: struck off on 14 Jul 2020",
+         derivation="The company was struck off in July 2020, and before that it was a holding company with no operations, so it has no revenue or staff to size.",
          how_wrong="Not applicable.",
-         action="Check its status on the Luxembourg register and, if it is active, size it by total assets from its filed accounts."),
+         action="Ask the client who has paid under this licence since 2020, because the signing company no longer exists."),
     dict(id="IN-093", scope="The whole MSC group owned by the Aponte family, not only the Geneva company",
          rev_metric="Revenue", rev_basis="PROXY", cur="USD", period="CY2024",
          rev=band(round(msc["mid"] * 1000, -3), round(msc["low"] * 1000, -3), round(msc["high"] * 1000, -3)),
          emp=band(200000, 180000, 220000), emp_basis="SELF_DECLARED", emp_period="2025",
-         source="Fleet size from Alphaliner via Kuehne+Nagel and TradeWinds; peer figures from the Hapag-Lloyd and Maersk 2024 reports; cruise passengers from MSC's 2024 sustainability report; headcount from MSC's own statement of over 200,000",
-         derivation="About USD 51bn from container shipping, 8bn from cruises and 9bn from everything else. A EUR 86bn figure for 2022 cited on Wikipedia fits once 2024 freight rates, about 40% lower, are allowed for.",
-         how_wrong="Good to about 20% either way. The slice for businesses other than shipping and cruises is a pure assumption.",
+         source="Fleet size from Alphaliner via Kuehne+Nagel and TradeWinds; peer figures from the Hapag-Lloyd and Maersk 2024 reports; cruise passengers from MSC's 2024 sustainability report; revenue per passenger from Carnival and Royal Caribbean 2024 results; Bolloré's African turnover from inforMARE; headcount from MSC's own statement of over 200,000",
+         derivation="About USD 51bn from container shipping, 8bn from cruises and 6bn from terminals, logistics and everything else. A EUR 86bn figure for 2022 cited on Wikipedia fits once 2024 freight rates, about 40% lower, are allowed for.",
+         how_wrong="About 15% either way. Container and cruise rest on listed peers; of the other businesses only the African logistics arm, about EUR 3bn, has any source.",
          action="Agree whether the licence covers the whole group, because the Geneva company on its own cannot be sized."),
     dict(id="IN-099", scope="Drury Hotels Company, LLC and the whole chain",
          rev_metric="Revenue", rev_basis="PROXY", cur="USD", period="2025",
          rev=band(round(drury["mid"], -1), round(drury["low"], -1), round(drury["high"], -1)),
          emp=band(6500, 6000, 7000), emp_basis="SELF_DECLARED", emp_period="about 2025",
-         source="Hotel count and staff from the About page on druryhotels.com, which states more than 150 hotels and over 6,500 team members; rooms per hotel from a sample on Lodging Development",
-         derivation="Revenue is hotels times rooms times 365 times occupancy times average room rate. RocketReach's USD 777m was kept as a cross-check; LeadIQ's USD 5bn was discarded because it implies about USD 500,000 per room per year.",
-         how_wrong="Somewhere between 25% below and 35% above. Occupancy and room rate are assumptions, while the hotel count is firm. 43 staff per hotel is plausible for this kind of hotel.",
+         source="Staff and the upper hotel count from the About page on druryhotels.com, which states more than 150 hotels and over 6,500 team members; 130 operating hotels from Lodging Magazine; rooms per hotel from a sample on Lodging Development; occupancy and room rates from Colliers, CoStar and Hilton's 2024 results",
+         derivation="Revenue is hotels times rooms times 365 times occupancy times average room rate. RocketReach's USD 777m was kept as a cross-check; LeadIQ's USD 5bn was discarded because it implies over USD 500 a night with every room full, against segment rates of USD 128 to 159.",
+         how_wrong="Somewhere between 30% below and 55% above. Occupancy and room rate come from segment and peer figures rather than Drury's own, and even the hotel count varies between 130 and 150 by source. About 46 staff per hotel is plausible for this kind of hotel.",
          action="None needed for tiering: the chain is large under any assumption."),
 ]
 
