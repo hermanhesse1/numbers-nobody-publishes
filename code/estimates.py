@@ -28,12 +28,21 @@ def band(mid, low, high):
 def msc_group_revenue():
     """MSC group revenue 2024, in USD bn, as container plus cruise plus everything else.
 
-    Container: fleet capacity times revenue per TEU of capacity at listed peers.
-      Hapag-Lloyd liner shipping 2024: $20.3bn on 2.346m TEU, about $8,650 per TEU.
-      Maersk Ocean 2024: $37.4bn on 4.31m TEU, about $8,675 per TEU.
+    Container: fleet capacity times revenue per TEU of capacity at other carriers.
+      2024 revenue per TEU of capacity, from each carrier's results and Alphaliner:
+        Hapag-Lloyd liner shipping: $20.3bn on 2.346m TEU, about $8,650.
+        Maersk Ocean: $37.4bn on 4.31m TEU, about $8,675.
+        CMA CGM shipping: $36.49bn on 3.85m TEU, about $9,485.
+        COSCO container shipping: $31.1bn on 3.3m TEU, about $9,425.
+        ONE, year to March 2025: $19.2bn on just over 2m TEU, about $9,600.
+        Evergreen: $12.7bn on an undated 1.84m TEU, about $6,900.
+      The first version used only Hapag-Lloyd and Maersk. Tested on the other
+      four, it under-predicted the three with reliable capacity figures by 8% to
+      10%, so the rate now uses the median of all six, about $9,050, and the band
+      of $7,500 to $9,600 spans them, with Evergreen's weak capacity figure
+      setting the floor.
       MSC had 6.3m TEU in January 2025 after adding 0.69m during 2024, so about
-      5.95m on average. The band of $7,500 to $9,500 allows for MSC chartering more
-      ships than its peers and an unknown rate mix; the band itself is not sourced.
+      5.95m on average.
     Cruise: 4.6m passengers in 2024 times revenue per passenger. Carnival took
       $25.0bn from 13.5m passengers, about $1,850 each, and Royal Caribbean $16.5bn
       from 8.56m, about $1,930. MSC sells cheaper European cruises, so the midpoint
@@ -45,7 +54,7 @@ def msc_group_revenue():
       is wide on purpose.
     """
     teu_avg = 5.95  # million TEU
-    container = band(teu_avg * 8650 / 1000, teu_avg * 7500 / 1000, teu_avg * 9500 / 1000)
+    container = band(teu_avg * 9050 / 1000, teu_avg * 7500 / 1000, teu_avg * 9600 / 1000)
     cruise = band(4.6 * 1.70, 4.6 * 1.50, 4.6 * 1.93)
     other = band(6.0, 3.5, 10.0)
     return {k: container[k] + cruise[k] + other[k] for k in ("mid", "low", "high")}
@@ -237,9 +246,9 @@ ROWS = [
          rev_metric="Revenue", rev_basis="PROXY", cur="USD", period="CY2024",
          rev=band(round(msc["mid"] * 1000, -3), round(msc["low"] * 1000, -3), round(msc["high"] * 1000, -3)),
          emp=band(200000, 180000, 220000), emp_basis="SELF_DECLARED", emp_period="2025",
-         source="Fleet size from Alphaliner via Kuehne+Nagel and TradeWinds; peer figures from the Hapag-Lloyd and Maersk 2024 reports; cruise passengers from MSC's 2024 sustainability report; revenue per passenger from Carnival and Royal Caribbean 2024 results; Bolloré's African turnover from inforMARE; headcount from MSC's own statement of over 200,000",
-         derivation="About USD 51bn from container shipping, 8bn from cruises and 6bn from terminals, logistics and everything else. A EUR 86bn figure for 2022 cited on Wikipedia fits once 2024 freight rates, about 40% lower, are allowed for.",
-         how_wrong="About 15% either way. Container and cruise rest on listed peers; of the other businesses only the African logistics arm, about EUR 3bn, has any source.",
+         source="Fleet size from Alphaliner via Kuehne+Nagel and TradeWinds; peer figures from the 2024 results of Hapag-Lloyd, Maersk, CMA CGM, COSCO, ONE and Evergreen, with capacities from Alphaliner; cruise passengers from MSC's 2024 sustainability report; revenue per passenger from Carnival and Royal Caribbean 2024 results; Bolloré's African turnover from inforMARE; headcount from MSC's own statement of over 200,000",
+         derivation="About USD 54bn from container shipping, 8bn from cruises and 6bn from terminals, logistics and everything else. Container revenue uses the median revenue per TEU of six listed carriers, after a test on four of them showed the two-carrier rate ran 8% to 10% low. A EUR 86bn figure for 2022 cited on Wikipedia fits once 2024 freight rates, about 40% lower, are allowed for.",
+         how_wrong="About 20% below to 12% above. Container and cruise rest on listed peers; of the other businesses only the African logistics arm, about EUR 3bn, has any source.",
          action="Agree whether the licence covers the whole group, because the Geneva company on its own cannot be sized."),
     dict(id="IN-099", scope="Drury Hotels Company, LLC and the whole chain",
          rev_metric="Revenue", rev_basis="PROXY", cur="USD", period="2025",
