@@ -10,7 +10,52 @@ Project, checking wether annual revenue and employee count be produced, with def
 
 ## Sample: what I chose and why
 
+I tagged all 100 names first ([data/licensee_list_tagged.csv](data/licensee_list_tagged.csv)), sorting each into one of 14 blocks by *why it would be hard*: Siemens family, recent spin-off, bank, brand, ambiguous name, dead company, Luxembourg holding and so on. I noted the trap and the right size measure for each. The sample is **23 entities, at least one from every block**, so every kind of failure gets tested once. The weight goes where the client's money is at risk:
+- **Micro businesses (5 of 23):** they have the fewest published numbers, and they are where "three people and a mailbox" hides.
+- **Large private companies (2):** this is where a small-tier licence is most likely to be running across a multinational group.
+
+I also included one control case, Fastenal: a listed company with one obvious match, to check the method gets the easy row right. I did not take the other 77 rows: they mostly repeat traps the sample already contains.
+
 ## Part 1: The match
+
+Matching file: [data/sample_matching.csv](data/sample_matching.csv). For each row it gives the matched entity, country, registration number, status, parent, an evidence link, the outcome bucket, a confidence level and a short note.
+
+**Why it is harder than it sounds:** the name on the contract is rarely the entity the numbers belong to. Seven of the 23 matched to a legal name different from the input:
+- a **brand to its company:** Blue Origin to Blue Origin, LLC; FintechOS to FINTECH OS SRL;
+- a **trading name to a statutory body:** NHS Greater Glasgow and Clyde to Greater Glasgow Health Board;
+- an **out-of-date legal form:** STEYN HOLDING S.A., SPF to S.à r.l.;
+- a **group brand to the local utility at the given address:** National Grid to The Brooklyn Union Gas Company;
+- a **product to its owner:** Old Spice to P&G.
+
+Even an exact name match was not the end of it:
+- Yazaki has three Romanian companies;
+- Margot Bakery's entity is registered as property letting;
+- Google Ireland's revenue is ad sales for all of Europe, the Middle East and Africa;
+- Siemens Energy could be the listed group or any of its local companies.
+
+**Matching a name is easy. Deciding which entity the contract means is the actual work.**
+
+**Outcomes:**
+
+| Bucket | n | Rows |
+|---|---|---|
+| Matched, high confidence | 11 | Fastenal, Siemens Gamesa, Google Ireland, Yazaki Romania, WK Kellogg, Temasek, NHS GGC, Margot Bakery, Alin Panificatie, Steyn Holding, MSC |
+| Matched, medium confidence | 6 | Siemens Energy, Blue Origin, FintechOS, Panificatie Moldova, National Grid (Brooklyn Union Gas), Drury Hotels |
+| Matched via owner (brand, no entity) | 1 | Old Spice → The Procter & Gamble Company |
+| Matched, but not operating | 2 | Bakery Bakery Ltd (dissolved 2019, never traded), Wirecard AG (insolvent since 2020) |
+| Ambiguous: several real candidates | 1 | Credit Mutuel: four separate banking groups |
+| Not found | 2 | see below |
+
+**What "not found" means:**
+- **Meridian: the input cannot be matched.** It is one common word with no country, legal form or address. That is not a search failure: no amount of searching can pick between dozens of real companies.
+- **Gunter Buchbender Tischlerei: probably exists, and my search failed.** It is most likely an unregistered sole trader, which German registers do not list. The only near-hits were a deleted Buchbender partnership in Heilbronn and a two-partner joinery in Solingen. A town or address from the contract would probably settle it.
+
+"Matched" is not the same as "operating", and the bucket hides some of that:
+- Alin Panificatie has filed no accounts since it was registered;
+- Panificatie Moldova reports 0 staff;
+- Steyn Holding is listed as "lapsed" by one database (found in Part 2; still to be checked on the Luxembourg register).
+
+So 3 of the 17 "matched" rows may be paying for licences nobody uses.
 
 ## Part 2: The estimate
 
