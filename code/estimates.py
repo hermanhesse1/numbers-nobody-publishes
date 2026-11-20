@@ -252,11 +252,16 @@ ROWS = [
 ]
 
 NONE_ROWS = {
-    "IN-032": "Ambiguous in Part 1: Credit Mutuel is four separate banking groups, so it cannot be sized until the client says which one signed.",
-    "IN-067": "Not found in Part 1.",
-    "IN-078": "Not found in Part 1, because the name is a single common word.",
-    "IN-082": "Insolvent since 2020, and its 2017 and 2018 accounts were declared void, so no credible figures exist.",
-    "IN-087": "Dissolved in 2019 after only ever filing dormant accounts, so its true size is zero.",
+    "IN-032": ("Ambiguous in Part 1: Credit Mutuel is four separate banking groups, so it cannot be sized until the client says which one signed.",
+               "Ask which Credit Mutuel group signed: Alliance Fédérale, Arkéa, Maine-Anjou Basse-Normandie or Océan."),
+    "IN-067": ("Not found in Part 1. It is probably an unregistered sole trader, which German registers do not list.",
+               "Ask for the town or address on the contract, which would most likely settle the match."),
+    "IN-078": ("Not found in Part 1, because the name is a single common word with nothing to choose between dozens of candidates.",
+               "Ask for the full counterparty name from the contract."),
+    "IN-082": ("Insolvent since 2020, and its 2017 and 2018 accounts were declared void, so no credible figures exist.",
+               "Ask who has paid under this licence since 2020, since Wirecard itself no longer trades."),
+    "IN-087": ("Dissolved in 2019 after only ever filing dormant accounts, so its true size is zero.",
+               "Check whether anyone still pays under this licence, and remove it from the list if not."),
 }
 
 COLS = ["id", "licensee_name", "matched_entity", "outcome_bucket", "size_scope",
@@ -267,9 +272,10 @@ COLS = ["id", "licensee_name", "matched_entity", "outcome_bucket", "size_scope",
 
 
 def fmt(x):
+    # Plain numbers with no thousands separators, so spreadsheets read them as numbers.
     if x is None:
         return ""
-    return f"{x:,.0f}" if abs(x) >= 100 else f"{x:,.3g}"
+    return f"{x:.0f}" if abs(x) >= 100 else f"{x:.4g}"
 
 
 def main():
@@ -296,15 +302,16 @@ def main():
                 employees_period=r["emp_period"], sources=r["source"], derivation=r["derivation"],
                 how_wrong_could_this_be=r["how_wrong"], client_action=r["action"])
         else:
+            derivation, action = NONE_ROWS.get(mid, ("Not estimated.", ""))
             base.update(revenue_basis="NONE", employees_basis="NONE",
-                        derivation=NONE_ROWS.get(mid, "Not estimated."))
+                        derivation=derivation, client_action=action)
         out.append(base)
 
     OUT_FILE.parent.mkdir(exist_ok=True)
     with open(OUT_FILE, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=COLS)
         w.writeheader()
-        for row in out:
+        for row in sorted(out, key=lambda r: r["id"]):
             w.writerow({c: row.get(c, "") for c in COLS})
 
     print(f"wrote {len(out)} rows -> {OUT_FILE.relative_to(ROOT)}")
