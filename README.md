@@ -59,9 +59,9 @@ A number on its own does not survive the client's analyst, so each row carries t
 
 | Basis | Revenue | Employees |
 |---|---|---|
-| Reported in a filing or a segment of one | 10 | 8 |
+| Reported in a filing or a segment of one | 10 | 9 |
 | Declared by the company, usually undated | 1 | 4 |
-| Derived here from proxies | 3 | 3 |
+| Derived here from proxies | 3 | 2 |
 | Deliberately left blank | 9 | 8 |
 
 Of the nine revenue gaps, six are the unmatched or dead rows: Credit Mutuel, Buchbender, Meridian, Wirecard, Bakery Bakery and Steyn Holding. Old Spice is a brand rather than a company, and Alin has never filed. Blue Origin gets a headcount but no revenue, because no source separates its revenue from Jeff Bezos's funding.
@@ -74,7 +74,7 @@ Of the nine revenue gaps, six are the unmatched or dead rows: Credit Mutuel, Buc
 | Romanian balance sheets filed with the Ministry of Finance | Yazaki, FintechOS, Panificatie Moldova | Kept | Up to 1.3 million Romanian companies: the 1,296,440 living companies whose legal form must file accounts, counted by the first version of `code/register.py`, which is in the git history. How many actually file with staff above zero would take the Ministry of Finance file to count |
 | Revenue per unit of capacity at listed peers, a median of about $9,050 per TEU across six carriers | MSC, about $68bn with a range of $55–76bn, adding cruises priced off Carnival and Royal Caribbean | Kept, and the one proxy tested on companies that report, as described below. MSC's terminals and logistics remain the weak slice, with only its African arm sourced | About 154,000 Romanian companies, 8.8% of the living register, once the recipe is extended from ships to vehicles, seats, rooms and beds. Part 5 has the count |
 | Rooms × 365 × occupancy × average room rate | Drury, about $880m with a range of $610m–1.36bn | Kept. Occupancy and room rate come from segment and peer figures by Colliers, CoStar and Hilton, not Drury's own, and sources disagree on the hotel count, 130 against more than 150 | About 15,000 Romanian companies whose activities are mainly accommodation, the group this formula was tested on |
-| Customers divided by customers per employee | Brooklyn Union Gas, about 2,050 staff with a range of 1,400–2,600 | Kept. Customers are sourced at 1.3m, and the ratio comes from three listed peers that run from 500 to 927 customers per employee | Hundreds of companies per country at most, a rough judgment rather than a count: only regulated networks report customer numbers |
+| Customers divided by customers per employee | Brooklyn Union Gas, before its own filing turned up | **Replaced by a reported figure.** The ratio from three listed utilities predicted about 2,000 staff; the utility's regulatory filing reports 1,464, so the proxy was 37% too high. It worked within 10% on two standalone utilities, but this one is a subsidiary whose shared work sits in a separate National Grid company | Hundreds of companies per country at most, a rough judgment rather than a count: only regulated networks report customer numbers |
 | LinkedIn-based headcount trackers such as Revelio | Siemens Gamesa, 27,300 | Kept where two trackers agree within 3%. Discarded for Temasek, where Revelio shows 122,763 against Temasek's own figure of about 960 | LinkedIn lists about 69 million company pages, but the figure is safe only where the legal entity and the people are the same thing. Wrong for holdings, investment firms and brands |
 | Figures a company declares about itself, such as Drury's "over 6,500 team members" | Drury, MSC, NHS GGC, Temasek | Kept as `SELF_DECLARED`, with wider ranges because they are undated | Most mid-size and large companies; no count, because each statement has to be found and dated by hand |
 | Revenue from lead-generation databases | Drury | **Discarded.** LeadIQ's $5bn would mean over $500 a night with every room full, against segment rates of $128 to $159 | Universal, which is exactly what makes it dangerous |
@@ -84,20 +84,22 @@ Two questions were put to every figure. The first is whether it describes the ma
 
 One proxy was also tested the way the third debate says every proxy should be. The first version priced MSC's container slots at about $8,650 per TEU, the rate at Hapag-Lloyd and Maersk. Applied to four other carriers that publish both revenue and fleet size, it under-predicted CMA CGM by 9%, COSCO by 8% and ONE by 10%, and over-predicted Evergreen by 25%, though Evergreen's fleet figure is undated and the weakest input in the test. Three misses in the same direction meant the two-carrier rate ran low, so the estimate now uses the median of all six carriers, and the range spans them. Four test companies is far too few to call the range calibrated, but it is measured rather than assumed, and it moved the answer by about $2bn.
 
+The gas-utility ratio got the same treatment, and the result was more useful because it failed. Tested on two standalone utilities, ONE Gas and NW Natural, it came within 10%. Tested on Brooklyn Union Gas itself, once its annual report to the New York regulator turned up a headcount of 1,464, it was 37% too high. The utility serves about 871 customers per employee, more than most of its peers, because much of its work is done by National Grid's shared service company and sits on another payroll. My earlier guess had been the opposite, that a dense city network would need more staff. The lesson is the same scope trap as Part 1, now showing up inside a proxy: a ratio learned from standalone companies overstates the staff of a subsidiary that borrows its people from the group.
+
 ## Part 3: The call
 
-I would not ship this as one file, but I would ship part of it, clearly labelled. The 10 revenue and 8 headcount figures read from filings could go in front of the client's analyst today, including Margot Bakery's headcount even though its revenue is an estimate.
+I would not ship this as one file, but I would ship part of it, clearly labelled. The 10 revenue and 9 headcount figures read from filings could go in front of the client's analyst today, including Margot Bakery's headcount even though its revenue is an estimate.
 
-Two kinds of row I would hold back from pricing. The proxy rows for MSC, Drury and the Brooklyn Union headcount show their working, and their inputs now come from listed peers and segment data. But peers are not the company itself: Drury's occupancy is its segment's, not its own, and most of MSC's terminal and logistics revenue still has no source. They are good enough to put a company in a tier, not to quote a number. The second kind is the rows where I chose the scope myself, namely Siemens Energy, Blue Origin, MSC, National Grid and Old Spice. The number is right for the entity I picked, but nobody yet knows whether that entity signed. Most of the error in this file is a scope error rather than an arithmetic one.
+Two kinds of row I would hold back from pricing. The proxy rows for MSC and Drury show their working, and their inputs now come from listed peers and segment data. But peers are not the company itself: Drury's occupancy is its segment's, not its own, and most of MSC's terminal and logistics revenue still has no source. They are good enough to put a company in a tier, not to quote a number. The second kind is the rows where I chose the scope myself, namely Siemens Energy, Blue Origin, MSC, National Grid and Old Spice. The number is right for the entity I picked, but nobody yet knows whether that entity signed. Most of the error in this file is a scope error rather than an arithmetic one.
 
-My checks cannot see four things. They cannot tell whether the matched entity is the one on the contract; only the contract can. They cannot see errors my sources share: termene.ro, totalfirme.ro and targetare.ro all copy the same Ministry of Finance data, so three of them agreeing is really one source. They cannot see age, and several figures are already 12 to 20 months old while the base keeps moving, as Part 4 shows. And they cannot tell whether my ranges are honest: apart from a small test on container shipping, a ±20% is a judgment, not a measured error.
+My checks cannot see four things. They cannot tell whether the matched entity is the one on the contract; only the contract can. They cannot see errors my sources share: termene.ro, totalfirme.ro and targetare.ro all copy the same Ministry of Finance data, so three of them agreeing is really one source. They cannot see age, and several figures are already 12 to 20 months old while the base keeps moving, as Part 4 shows. And they cannot tell whether my ranges are honest: apart from small tests on container shipping and gas utilities, a ±20% is a judgment, not a measured error.
 
 The next steps, in order of value per hour, would be these:
 
 1. Ask the client for the counterparty name and address on each contract. That fixes scope on around nine of the 23 rows, more than any amount of research could.
 2. Parse the free Companies House bulk accounts to get a reported headcount for every UK licensee automatically.
-3. Replace peer and segment benchmarks with the company's own figures where any exist, such as Drury's occupancy from STR or the gas utility's headcount from its rate case filings.
-4. Extend the container-shipping test to every proxy, such as listed hotel groups for the rooms formula and listed gas utilities for the customer ratio, so that measured error sets every range width instead of my judgment.
+3. Replace peer and segment benchmarks with the company's own figures where any exist, such as Drury's occupancy from STR, the way the gas utility's own regulatory filing replaced its estimated headcount.
+4. Extend the container-shipping test to every proxy, such as listed hotel groups for the rooms formula, so that measured error sets every range width instead of my judgment.
 
 ## Part 4: The room
 
@@ -149,7 +151,7 @@ What I deliberately left out:
 - **The quant route.** The sample is built around traps such as group versus entity, brand versus company and dead firms, and a model trained on Romanian SMEs cannot see those.
 - **Opening every primary document.** Several figures come from press coverage of a filing, such as Google Ireland and FintechOS, or from a jobs portal, as with NHS GGC, and are labelled that way.
 - **The last unsourced inputs**: MSC's revenue from terminals and logistics beyond its African arm, and the floors on hotel size and bakery revenue per head. They are marked in the code; everything else in the derivations now has a source.
-- **Calibrating the ranges** beyond one small test on container shipping. The other widths are judgment rather than measured error, as the third debate explains.
+- **Calibrating the ranges** beyond two small tests, on container shipping and gas utilities. The other widths are judgment rather than measured error, as the third debate explains.
 - **Parsing the Companies House bulk accounts, and opening the accommodation and vehicle registers to check that the capacity counts in Part 5 can really be found.** Both are the obvious next steps and neither was needed to show the recipe works.
 
 ## Debate topics
