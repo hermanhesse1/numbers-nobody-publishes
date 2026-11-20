@@ -121,10 +121,45 @@ Every one of these events is public, dated and machine-readable: SEC 8-Ks, merge
 
 ## Cut list
 
+**Where the time went:**
+- **Part 1, matching 23 entities by hand (most of it).** Deciding *which* entity a name means turned out to be the real work.
+- **Part 2, sourcing the figures and building four proxy derivations.**
+- **Part 5, mostly fighting a download server** that silently truncated files.
+
+**What I deliberately did not do:**
+- **Rows beyond the sample.** The other 77 would have added volume, not new lessons. The sample already covers every block A–N.
+- **The quant route.** The sample is built around traps, such as group versus entity, a brand versus a legal entity, and dead companies. A model trained on Romanian SMEs cannot see those.
+- **Opening every primary document.** Several figures come from press coverage of a filing (Google Ireland, FintechOS) or from a jobs portal (NHS GGC), not from the filing itself. They are labelled as such.
+- **Sourcing the recalled assumptions.** These are hotel occupancy and room prices, utility customers per employee, and revenue per bakery employee. They are marked in the code. Sourcing them is the next hour of work, not a reason to hide the derivations.
+- **Calibrating the ranges.** The widths are judgment, not measured error (see the third debate).
+- **Parsing the Companies House bulk accounts, and joining the register to `web_uu_an2024`.** Both are the obvious next step and are named in Parts 3 and 5. Neither was needed to show that the recipe works.
+
 ## Debate topics
 
 ### Where I would not trust AI tools
 
+- **Any number or identity claim it cannot point to.** During this work, AI-summarised search results:
+  - offered Kellanova figures next to WK Kellogg's;
+  - quoted a lead-gen database's $5bn for a hotel chain with about 150 hotels;
+  - would have accepted Revelio's 122,763 "Temasek employees".
+- **Its own logic, too.** My first industry rule took the "first-listed" activity code. It looked sensible until I noticed the file is sorted by code.
+- **How I catch it:**
+  - every figure needs a URL that a second fetch confirms;
+  - every derived number gets a physical sanity check, such as revenue per room or per employee;
+  - every "it worked" gets checked against something independent. The downloads exited with code 0 while two of three files were truncated, and only comparing byte counts with the advertised sizes caught it.
+
 ### Knowing the dataset is wrong at scale
 
+There is no complete answer sheet, but there are partial ones.
+
+- **Score each proxy on companies that do report.** UK and Romanian filers, listed companies, and companies acquired with disclosed financials make a labelled subset for every recipe. If a proxy is wrong there, it is wrong everywhere.
+- **Look for internal contradictions:**
+  - a subsidiary larger than its parent;
+  - revenue per employee outside the range for its industry;
+  - a company whose size jumps tenfold between refreshes with no corporate event behind it.
+- **Watch how often independent sources disagree.** When the share of rows where two independent sources disagree starts rising, the pipeline has drifted, even if no single row looks wrong.
+
 ### Ranges you would bet on
+
+- **How to set the widths:** run each recipe on companies whose real number is known (the labelled subset above) and take the empirical error quantiles per proxy and per company type. An 80% range is then the 10th–90th percentile of measured error, not a feeling.
+- **How to tell a year later whether the ranges were honest:** collect the figures that surface in the meantime (new filings, IPO prospectuses, acquisition disclosures) and check what share fell inside their ranges. If 80% ranges catch 55%, they were dishonest. If they catch 98%, they were too wide to price on. Either way, the fix is to the width for that proxy, not to individual rows.
