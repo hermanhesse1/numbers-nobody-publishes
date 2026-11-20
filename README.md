@@ -1,210 +1,149 @@
 # Estimating revenue and headcount for a licensee list
 
-Project, checking wether annual revenue and employee count be produced, with defensible evidence, for a list of 100 licensee names?
+Can annual revenue and employee count be produced, with evidence that would survive the client's analyst, for 100 licensee names typed in by sales reps? For about ten of the 23 companies in my sample the answer is yes, straight from a filing. For a few more it is yes as a derived estimate that is good enough to set a price tier. For the rest the honest answer is a gap with a reason attached. The main finding is that most of the risk is not in the arithmetic but in deciding which legal entity a name on a contract actually means.
 
 ## Repo layout
 
-- `data/`: the original list and my tagged version
-- `code/`: scripts
-- `output/`: the client file
+- `data/` holds the client's original list, my tagged version and the Part 1 matching file.
+- `code/estimates.py` builds the client file and holds every Part 2 input, source and derivation. `code/register.py` produces the Part 5 counts.
+- `output/` holds the client file, `sample_estimates.csv`, and the register counts.
+- `big_data/` is ignored by git. Part 5 expects the ONRC register files there, downloaded from data.gov.ro.
+
+Run either script from the repo root with `python3 code/<name>.py`.
 
 ## Sample: what I chose and why
 
-I tagged all 100 names first ([data/licensee_list_tagged.csv](data/licensee_list_tagged.csv)), sorting each into one of 14 blocks by *why it would be hard*: Siemens family, recent spin-off, bank, brand, ambiguous name, dead company, Luxembourg holding and so on. I noted the trap and the right size measure for each. The sample is **23 entities, at least one from every block**, so every kind of failure gets tested once. The weight goes where the client's money is at risk:
-- **Micro businesses (5 of 23):** they have the fewest published numbers, and they are where "three people and a mailbox" hides.
-- **Large private companies (2):** this is where a small-tier licence is most likely to be running across a multinational group.
+Before sampling, I tagged all 100 names in [data/licensee_list_tagged.csv](data/licensee_list_tagged.csv) by why each one would be hard to size. That produced 14 blocks, among them the Siemens family, recent spin-offs, banks, brands, ambiguous names, dead companies and Luxembourg holdings, each with a note on its trap and the right size measure. The sample takes 23 entities with at least one from every block, so every kind of failure is tested at least once.
 
-I also included one control case, Fastenal: a listed company with one obvious match, to check the method gets the easy row right. I did not take the other 77 rows: they mostly repeat traps the sample already contains.
+Within that, the weight goes where the client's money is at risk. Five of the 23 are micro businesses, because they publish the least and are where "three people and a mailbox" hides. Two are large private companies, where a small-tier licence is most likely running across a multinational group. Fastenal is the control case: a listed company with one obvious match, to check that the method gets the easy row right. The other 77 rows would mostly have repeated traps the sample already contains.
 
 ## Part 1: The match
 
-Matching file: [data/sample_matching.csv](data/sample_matching.csv). For each row it gives the matched entity, country, registration number, status, parent, an evidence link, the outcome bucket, a confidence level and a short note.
+The matching file is [data/sample_matching.csv](data/sample_matching.csv). Each row gives the matched entity, its country, registration number, status and parent, an evidence link, an outcome bucket, a confidence level and a short note.
 
-**Why it is harder than it sounds:** the name on the contract is rarely the entity the numbers belong to. Seven of the 23 matched to a legal name different from the input:
-- a **brand to its company:** Blue Origin to Blue Origin, LLC; FintechOS to FINTECH OS SRL;
-- a **trading name to a statutory body:** NHS Greater Glasgow and Clyde to Greater Glasgow Health Board;
-- an **out-of-date legal form:** STEYN HOLDING S.A., SPF to S.à r.l.;
-- a **group brand to the local utility at the given address:** National Grid to The Brooklyn Union Gas Company;
-- a **product to its owner:** Old Spice to P&G.
+Matching turned out to be harder than it sounds, because the name on a contract is rarely the entity the numbers belong to. Seven of the 23 matched to a legal name different from the one typed in. FintechOS and Blue Origin are brands for FINTECH OS SRL and Blue Origin, LLC. NHS Greater Glasgow and Clyde is the operating name of a statutory body, Greater Glasgow Health Board. STEYN HOLDING S.A., SPF dropped its SPF status in 2014 and is now registered as an S.à r.l. The Brooklyn address next to National Grid points to The Brooklyn Union Gas Company, not the UK group. Old Spice is a P&G product with no company of its own.
 
-Even an exact name match was not the end of it:
-- Yazaki has three Romanian companies;
-- Margot Bakery's entity is registered as property letting;
-- Google Ireland's revenue is ad sales for all of Europe, the Middle East and Africa;
-- Siemens Energy could be the listed group or any of its local companies.
+Even an exact name match was rarely the end of it. Yazaki has three companies in Romania, Margot Bakery's entity is registered as a property letting business, Google Ireland's revenue covers ad sales across Europe, the Middle East and Africa, and "Siemens Energy" could be the listed group or any of its local companies. Matching a name is easy; deciding which entity the contract means is the actual work.
 
-**Matching a name is easy. Deciding which entity the contract means is the actual work.**
-
-**Outcomes:**
-
-| Bucket | n | Rows |
+| Outcome | n | Rows |
 |---|---|---|
 | Matched, high confidence | 11 | Fastenal, Siemens Gamesa, Google Ireland, Yazaki Romania, WK Kellogg, Temasek, NHS GGC, Margot Bakery, Alin Panificatie, Steyn Holding, MSC |
-| Matched, medium confidence | 6 | Siemens Energy, Blue Origin, FintechOS, Panificatie Moldova, National Grid (Brooklyn Union Gas), Drury Hotels |
-| Matched via owner (brand, no entity) | 1 | Old Spice → The Procter & Gamble Company |
-| Matched, but not operating | 2 | Bakery Bakery Ltd (dissolved 2019, never traded), Wirecard AG (insolvent since 2020) |
-| Ambiguous: several real candidates | 1 | Credit Mutuel: four separate banking groups |
-| Not found | 2 | see below |
+| Matched, medium confidence | 6 | Siemens Energy, Blue Origin, FintechOS, Panificatie Moldova, Brooklyn Union Gas for National Grid, Drury Hotels |
+| Matched through its owner | 1 | Old Spice to The Procter & Gamble Company |
+| Matched but not operating | 2 | Bakery Bakery Ltd, dissolved in 2019 without ever trading; Wirecard AG, insolvent since 2020 |
+| Ambiguous | 1 | Credit Mutuel, which is four separate banking groups |
+| Not found | 2 | Meridian and Gunter Buchbender Tischlerei |
 
-**What "not found" means:**
-- **Meridian: the input cannot be matched.** It is one common word with no country, legal form or address. That is not a search failure: no amount of searching can pick between dozens of real companies.
-- **Gunter Buchbender Tischlerei: probably exists, and my search failed.** It is most likely an unregistered sole trader, which German registers do not list. The only near-hits were a deleted Buchbender partnership in Heilbronn and a two-partner joinery in Solingen. A town or address from the contract would probably settle it.
+The two unmatched rows are different results. Meridian cannot be matched by anyone: it is a single common word with no country, legal form or address, and no amount of searching can choose between dozens of real companies. Gunter Buchbender Tischlerei probably does exist and my search failed. It is most likely an unregistered sole trader, which German registers do not list, and the only near misses were a deleted Buchbender partnership in Heilbronn and a two-partner joinery in Solingen. A town from the contract would probably settle it.
 
-"Matched" is not the same as "operating", and the bucket hides some of that:
-- Alin Panificatie has filed no accounts since it was registered;
-- Panificatie Moldova reports 0 staff;
-- Steyn Holding is listed as "lapsed" by one database (found in Part 2; still to be checked on the Luxembourg register).
-
-So 3 of the 17 "matched" rows may be paying for licences nobody uses.
+"Matched" also does not mean "operating". Alin Panificatie has never filed accounts, Panificatie Moldova reports no staff, and one database lists Steyn Holding as lapsed, which still needs checking on the Luxembourg register. Three of the 17 matched licensees may be paying for software nobody uses.
 
 ## Part 2: The estimate
 
-**Route: detective.** My Part 1 work was already one company at a time, and the sample was picked for its traps. A model trained on Romanian SMEs cannot tell me that Google Ireland's revenue is EMEA ad sales, or that Temasek's "122,763 employees" are its portfolio companies' staff.
+I took the detective route. The sample was chosen for its traps, and a model trained on Romanian SMEs cannot tell me that Google Ireland's revenue is regional ad sales or that a headcount tracker has counted Temasek's portfolio companies as Temasek staff. Working one company at a time can.
 
-Output: [output/sample_estimates.csv](output/sample_estimates.csv), produced by [code/estimates.py](code/estimates.py). Every input, source and proxy calculation lives in that script, so you can change an assumption and rerun it.
+The client file is [output/sample_estimates.csv](output/sample_estimates.csv), built by [code/estimates.py](code/estimates.py). Every input, source and proxy calculation lives in that script, so an analyst can change an assumption and rerun it.
 
 ### What travels with every figure
 
-A number on its own does not survive the client's analyst. Each row carries:
+A number on its own does not survive the client's analyst, so each row carries the following:
 
-- **scope**: which entity or group the number describes. Most of the risk sits here, not in the arithmetic.
-- **metric**: revenue, or something more honest. That is portfolio value for Temasek and budget for the NHS board. For Google Ireland revenue is shown but marked as the wrong measure.
-- **basis**: `REPORTED`, `REPORTED_SEGMENT`, `SELF_DECLARED`, `PROXY` or `NONE`.
-- **period**: the date the number belongs to.
-- **point + low/high**: the range is zero-width only when the number comes straight from a filing.
-- **sources**, a **derivation** you can disagree with, **how wrong could this be**, and a **client action**.
+- **Scope** says which entity or group the number describes. Most of the risk sits here, not in the arithmetic.
+- **Metric** is revenue where revenue is meaningful and something more honest where it is not, such as portfolio value for Temasek or budget for the NHS board. Google Ireland's revenue is shown but flagged as the wrong measure.
+- **Basis** is one of `REPORTED`, `REPORTED_SEGMENT`, `SELF_DECLARED`, `PROXY` or `NONE`.
+- **Period** is the date the number belongs to.
+- **A point value with a low and high** gives the range, which is zero-width only when the number comes straight from a filing.
+- **Sources, a derivation, an answer to "how wrong could this be" and a client action** complete each row, written so that someone can disagree with them.
 
 ### Results on the 23-entity sample
 
 | Basis | Revenue | Employees |
 |---|---|---|
-| Reported (filing, or a segment of one) | 10 | 8 |
-| Self-declared (company page, undated) | 1 | 4 |
-| Proxy (derived here) | 3 | 3 |
-| Nothing delivered, deliberately | 9 | 8 |
+| Reported in a filing or a segment of one | 10 | 8 |
+| Declared by the company, usually undated | 1 | 4 |
+| Derived here from proxies | 3 | 3 |
+| Deliberately left blank | 9 | 8 |
 
-The nine revenue gaps are: five unmatched or dead rows (Credit Mutuel, Buchbender, Meridian, Wirecard, Bakery Bakery), two non-entities (Old Spice, Steyn), one company that never filed (Alin) and Blue Origin. For Blue Origin I deliver headcount only, because no source separates its revenue from Bezos funding.
+Of the nine revenue gaps, five are the unmatched or dead rows: Credit Mutuel, Buchbender, Meridian, Wirecard and Bakery Bakery. Old Spice is a brand rather than a company, Steyn is a holding with no operations, and Alin has never filed. Blue Origin gets a headcount but no revenue, because no source separates its revenue from Jeff Bezos's funding.
 
 ### Proxy ledger: what I tried, what survived, how far it scales
 
 | Proxy | Used on | Verdict | Reach at scale |
 |---|---|---|---|
-| **UK micro accounts iXBRL tag `AverageNumberEmployeesDuringPeriod`** | Margot Bakery: 13 staff, filed although turnover is not | **Kept: the best find.** It turns a "no data" micro company into a reported headcount | Every UK company that files accounts. Companies House publishes them free as a bulk iXBRL download, so this is a parser, not research |
-| Romanian Ministry of Finance balance sheet (turnover + employees) | Yazaki, FintechOS, Panificatie Moldova | Kept | Every Romanian filer: the dataset behind the quant route |
-| Peer revenue per unit of capacity (Hapag-Lloyd and Maersk: ~$8,650 per TEU) | MSC: ~$69bn (57–82) | Kept. The two peers agree within 1%, and a 2022 figure fits once rates are rescaled | Capacity industries only: shipping (TEU), airlines (seats), hotels (rooms), hospitals (beds). Few companies, but the biggest private ones |
-| Rooms × 365 × occupancy × ADR | Drury: ~$1.07bn (0.79–1.47) | Kept. Hotel count and staff are sourced; occupancy and ADR are assumptions | Any hotel group that lists its properties |
-| Customers ÷ customers-per-employee | Brooklyn Union Gas: ~1,900 staff (1,260–2,890) | Kept, weakly: both inputs are assumptions | Regulated utilities, which report customer counts to regulators |
-| LinkedIn-based trackers (Revelio, Statista) | Siemens Gamesa: 27,300 | Kept for an operating company (two trackers agree within 3%). **Discarded for Temasek**: 122,763 against its own ~960 | Universal, but only safe where the legal entity and the people are the same thing. Wrong for holding, investment and brand rows |
-| Company-declared figures ("over 6,500 team members") | Drury, MSC, NHS GGC, Temasek | Kept as `SELF_DECLARED`; undated, so widened | Most mid-size and large companies |
-| Lead-gen database revenue (LeadIQ, RocketReach, Owler) | Drury | **Discarded.** LeadIQ's $5bn implies ~$500k per room per year, which is physically impossible | Universal, which is exactly why it is dangerous |
-| Old headcounts and brand-sales estimates | Brooklyn Union (3,651, decades old); Old Spice ($564m, 2013) | Discarded: they describe a different time | — |
+| **UK iXBRL tag `AverageNumberEmployeesDuringPeriod`** | Margot Bakery, which files a headcount of 13 but no turnover | **Kept, and the best find.** It turns a "no data" micro company into a reported headcount | Every UK company that files accounts. Companies House publishes them free in bulk, so this needs a parser, not research |
+| Romanian balance sheets filed with the Ministry of Finance | Yazaki, FintechOS, Panificatie Moldova | Kept | Every Romanian filer, and the dataset behind the quant route |
+| Revenue per unit of capacity at listed peers, about $8,650 per TEU at Hapag-Lloyd and Maersk | MSC, about $69bn with a range of $57–82bn | Kept. The two peers agree within 1%, and a 2022 figure fits once freight rates are rescaled | Capacity-based industries such as shipping, airlines, hotels and hospitals. Few companies, but among the biggest private ones |
+| Rooms × 365 × occupancy × average room rate | Drury, about $1.07bn with a range of $0.79–1.47bn | Kept. Hotel count and staff are sourced; occupancy and room rate are assumptions | Any hotel group that lists its properties |
+| Customers divided by customers per employee | Brooklyn Union Gas, about 1,900 staff with a range of 1,260–2,890 | Kept, weakly, since both inputs are assumptions | Regulated utilities, which report customer counts to regulators |
+| LinkedIn-based headcount trackers such as Revelio | Siemens Gamesa, 27,300 | Kept where two trackers agree within 3%. Discarded for Temasek, where Revelio shows 122,763 against Temasek's own figure of about 960 | Universal, but safe only where the legal entity and the people are the same thing. Wrong for holdings, investment firms and brands |
+| Figures a company declares about itself, such as Drury's "over 6,500 team members" | Drury, MSC, NHS GGC, Temasek | Kept as `SELF_DECLARED`, with wider ranges because they are undated | Most mid-size and large companies |
+| Revenue from lead-generation databases | Drury | **Discarded.** LeadIQ's $5bn would mean about $500k per hotel room per year, which is impossible | Universal, which is exactly what makes it dangerous |
+| Old headcounts and brand-sales estimates | Brooklyn Union's 3,651 staff from decades ago, Old Spice's $564m from 2013 | Discarded because they describe a different time | — |
 
-Two checks ran on every figure.
+Two questions were put to every figure. The first is whether it describes the matched entity at the time claimed. That caught Kellanova figures turning up for WK Kellogg, the Temasek headcount, National Grid plc numbers next to the Brooklyn gas utility, and Google Ireland's regional revenue. The second is whether I would notice if it did not, and the honest answer is only where a second, independent number exists. Siemens Gamesa's segments add up to the group total, the MSC estimate fits the 2022 figure, and 43 staff per hotel is plausible for Drury's format. Everywhere else the file rests on a single source, and the sources column shows which one.
 
-**Does it describe the matched entity, at the claimed time?** The traps caught this way:
-- Kellanova versus WK Kellogg.
-- Revelio counting Temasek's portfolio companies as Temasek staff.
-- National Grid plc versus the Brooklyn gas utility.
-- Google Ireland revenue that is really EMEA ad sales.
+## Part 3: The call
 
-**Would I notice if it didn't?** Only where a second, independent number exists. Siemens Gamesa's segments add up to the group total; MSC's TEU-based estimate fits the 2022 figure; Drury's 43 staff per hotel is plausible for the format. Rows with only one source are marked with a single source.
+I would not ship this as one file, but I would ship part of it, clearly labelled. The 10 revenue and 8 headcount figures read from filings could go in front of the client's analyst today, including Margot Bakery's headcount even though its revenue is an estimate.
 
-**New finding for Part 1:** Eulerpool lists STEYN HOLDING (B31697) as *lapsed*. The register itself needs checking before that row is called active.
+Two kinds of row I would hold back from pricing. The proxy rows for MSC, Drury and the Brooklyn Union headcount show their working, but some inputs are still assumptions from memory rather than sourced benchmarks: hotel occupancy and room rates, utility customers per employee, and MSC's revenue outside container shipping. They are good enough to put a company in a tier, not to quote a number. The second kind is the rows where I chose the scope myself, namely Siemens Energy, Blue Origin, MSC, National Grid and Old Spice. The number is right for the entity I picked, but nobody yet knows whether that entity signed. Most of the error in this file is a scope error rather than an arithmetic one.
 
-## Part 3: The call (would I ship this?)
+My checks cannot see four things. They cannot tell whether the matched entity is the one on the contract; only the contract can. They cannot see errors my sources share: termene.ro, totalfirme.ro and targetare.ro all copy the same Ministry of Finance data, so three of them agreeing is really one source. They cannot see age, and several figures are already 12 to 20 months old while the base keeps moving, as Part 4 shows. And they cannot tell whether my ranges are honest, because with no answer sheet a ±20% is a judgment, not a measured error.
 
-**Not as one file. I would ship part of it, labelled.** The 10 revenue and 8 headcount figures read from filings I would put in front of the client's analyst today. That includes Margot Bakery's 13 staff, which comes from a filing even though its revenue is a proxy. The rest I would not ship for pricing:
-- **Proxy rows (MSC, Drury, Brooklyn Union headcount):** the arithmetic is shown, but key inputs are still my recalled assumptions, not sourced benchmarks. These are hotel occupancy and room prices, utility customers per employee, and MSC's "other businesses" slice. They are good enough to place a company in a tier, not to quote a number.
-- **Rows whose scope I chose:** Siemens Energy, Blue Origin, MSC, National Grid and Old Spice. The number is right for the entity I picked, and nobody yet knows whether that entity signed. Most of the error in this file is a scope error, not an arithmetic error.
+The next steps, in order of value per hour, would be these:
 
-**What my checks cannot see:**
-1. **Whether the matched entity is the one on the contract.** Only the contract can settle that.
-2. **Errors my sources share.** Termene, Totalfirme and Targetare all mirror the same Ministry of Finance data, so three sources agreeing is really one source.
-3. **Age.** Several figures are 12–20 months old, and the base is moving (see Part 4).
-4. **Whether my ranges are honest.** There is no answer sheet, so a "±20%" is my judgment, not a measured error rate.
+1. Ask the client for the counterparty name and address on each contract. That fixes scope on around nine of the 23 rows, more than any amount of research could.
+2. Parse the free Companies House bulk accounts to get a reported headcount for every UK licensee automatically.
+3. Replace each assumption from memory with a sourced benchmark, such as STR data for hotels and utility annual reports for customers per employee.
+4. Test each proxy on companies that do report, such as listed hotel groups for the rooms formula and Hapag-Lloyd and Maersk for the capacity formula, so that measured error sets the range width instead of my judgment.
 
-**What I would do next, in order of value per hour:**
-1. **Ask the client for the counterparty name and address from each contract.** This fixes scope on ~40% of rows, more than any amount of research could.
-2. **Parse the free Companies House bulk iXBRL download.** That gives reported headcount for every UK licensee automatically.
-3. **Replace each recalled assumption with a sourced benchmark:** STR for hotels, utility 10-Ks for customers per employee.
-4. **Calibrate each proxy on companies that do report.** Run the rooms formula on listed hotel groups and the capacity formula on Hapag-Lloyd and Maersk. The measured error then becomes the range width, instead of my judgment.
+## Part 4: The room
 
-## Part 4: The room (one insight the client didn't ask for)
+The licensee list goes stale, and both of the client's fears come from that one cause. On the list exactly as it was sent, 15 of the 100 licensees have changed what they are since 2020. Seven were absorbed into far larger groups: VMware into Broadcom, ANSYS into Synopsys, Credit Suisse into UBS, WK Kellogg into Ferrero, HELLA into Forvia, Siemens Gamesa into Siemens Energy and DEGIRO into flatexDEGIRO. Six were carved out of larger parents: Siemens Energy, Sandoz, Solstice, Amentum, Qnity and Sierra Space. Two more were renamed or collapsed, Currys PC World and Wirecard. The absorbed seven are the small-tier licensee now sitting inside a multinational, priced for what it was when it signed. The spin-offs are the reverse and less obvious: a licence signed by the parent may now be used by a separate company that was never priced at all, which is unlicensed use rather than underpricing.
 
-**The licensee list goes out of date, and both of the client's fears come from that one cause.** Using the list as it was sent, 15 of the 100 licensees have changed what they are since 2020:
-- **7 were absorbed into far larger groups:** VMware into Broadcom, ANSYS into Synopsys, Credit Suisse into UBS, WK Kellogg into Ferrero, HELLA into Forvia, Siemens Gamesa into Siemens Energy, DEGIRO into flatexDEGIRO.
-- **6 were carved out of larger parents:** Siemens Energy, Sandoz, Solstice, Amentum, Qnity, Sierra Space.
-- **2 were renamed or collapsed:** Currys PC World, Wirecard.
-
-The first group is the "small tier, multinational group" problem: the licensee was priced for what it was when it signed, and is now a subsidiary of a company many times its size. The second group is the reverse, and less obvious. A licence signed by the parent may now be used by a spun-off company that is a separate legal entity and was never priced at all. That is unlicensed use, not underpricing.
-
-Every one of these events is public, dated and machine-readable: SEC 8-Ks, merger notices, register changes. Most enterprise licences also carry an assignment or change-of-control clause, so each event is a contractual moment to re-paper the deal on the client's terms, not a renegotiation they would have to win cold. 15 in about six years is roughly 2.5% of the base a year. The list was probably built to be hard and overstates the true rate, but even a third of that, across a large base, is a steady stream of repricing triggers nobody is watching. The proposal: watch the licensee base for corporate events, not just for size, and reprice at the event rather than at renewal.
+Every one of these events is public, dated and machine-readable through SEC filings, merger notices and register changes. Enterprise licences often carry an assignment or change-of-control clause, which would make each event a contractual moment to re-paper the deal on the client's terms rather than a renegotiation to win cold. Fifteen events in about six years is roughly 2.5% of the base a year. This list was probably built to be difficult and overstates the real rate, but even a third of it across a large base is a steady stream of repricing triggers that nobody is watching. The proposal is to monitor the licensee base for corporate events, not just size, and to reprice at the event rather than at renewal.
 
 ## Part 5: The register
 
-**Proxy:** the best one from Part 2, the average headcount a company reports in its annual accounts. In Romania that is the employee line on the balance sheet filed with the Ministry of Finance.
-
-**The three numbers** (ONRC snapshot of 8 Dec 2025; [code/register.py](code/register.py), output in [output/register_counts.txt](output/register_counts.txt)):
+The proxy is the best one from Part 2, the average headcount a company reports in its annual accounts. In Romania that is the employee line on the balance sheet filed with the Ministry of Finance. The counts come from the ONRC snapshot of 8 December 2025, using [code/register.py](code/register.py), with the output in [output/register_counts.txt](output/register_counts.txt).
 
 | | |
 |---|---|
 | Companies inside the line | **1,296,440** |
-| Share of the living register | **74.2%** (of 1,747,958) |
-| Largest industries (CAEN division) | **47 Retail trade** (476,708), **46 Wholesale trade** (371,164), **49 Land transport** (250,016) |
+| Share of the living register | **74.2%** of 1,747,958 |
+| Largest industries by CAEN division | **Retail trade** 476,708, **wholesale trade** 371,164, **land transport** 250,016 |
 
-**How I drew the lines:**
-1. **Living.** The register holds 4,111,567 companies. I count a company as living if it carries status `1048 funcţiune` (operating) and no status meaning struck off, dissolved, in liquidation, insolvent, suspended, or abandoned by its owners. That leaves 1,747,958. The dead statuses are matched by keyword against the official list of status codes, and the script prints the codes it keeps, so you can disagree code by code.
-2. **Inside the proxy.** The line is drawn on legal form, not activity code: what decides whether a headcount exists is whether the company must file accounts. Companies (SRL, SA, SNC, SCS, SCA), cooperatives and autonomous public companies are inside. Sole traders and family businesses (PFA, II, IF: 450,256 living) file a personal tax return with no headcount, so they are outside.
-3. **Industry.** The register lists *authorised* activities with no "main activity" flag, and stores them sorted by code. My first attempt, taking each company's first-listed code, therefore just picked its lowest code number, so I dropped it. Instead, a company counts in every division where it is authorised. Shares therefore add up to more than 100%, and the ranking tells you breadth of authorisation, not where revenue is earned. 289k companies have only the new Rev.3 (2025) codes and are counted under those. 109k have no activity code at all.
+I drew the lines in three steps. The register holds 4,111,567 companies, and I count one as living if it carries status `1048 funcţiune`, meaning operating, and no status for being struck off, dissolved, in liquidation, insolvent, suspended or abandoned by its owners. That leaves 1,747,958. The dead statuses are matched by keyword against the official list of status codes, and the script prints the codes it keeps so they can be challenged one by one.
 
-**Where the line is weak:**
-- **The 74% is an upper bound.** Being required to file is not the same as filing, and filing is not the same as having staff. Many SRLs report 0 employees, and the register cannot show that.
-- **Some "living" companies are probably zombies.** 139,445 of the 1.30m carry "registered office expired" or "directors' mandate expired". Dropping them gives 1,156,995 (66.2%).
-- **Retail is inflated.** Romanian SRLs routinely add retail to their authorised activities just in case.
-- **What would turn the bound into a measured number:** joining on CUI to the Ministry of Finance file `web_uu_an2024` would show who actually filed with employees above zero.
-- **Reproducibility:** the data.gov.ro server sends no file size and silently cut two downloads short. The script's inputs should be checked against the advertised sizes (675 MB for `od_firme.csv`, 400 MB for `od_caen_autorizat.csv`).
+The line itself is drawn on legal form rather than activity code, because what decides whether a headcount exists is whether the company has to file accounts. Companies such as SRLs and SAs are inside, along with cooperatives and autonomous public companies. Sole traders and family businesses, the PFA, II and IF forms, file a personal tax return with no headcount, so their 450,256 living members sit outside.
+
+Industry was harder. The register lists authorised activities with no main-activity flag and stores them sorted by code, so my first attempt, taking each company's first-listed code, was really picking its lowest code number. Instead, a company counts in every division where it is authorised. The shares therefore add up to more than 100%, and the ranking shows breadth of authorisation rather than where revenue is earned. Some 289,000 companies carry only the new 2025 codes and are counted under those, and 109,000 have no activity code at all.
+
+The line has four weaknesses. The 74% is an upper bound, because having to file is not the same as filing, and filing is not the same as having staff; many SRLs report no employees, which the register cannot show. Some of the living are probably zombies: 139,445 companies inside the line have an expired registered office or expired directors, and dropping them gives 1,156,995, or 66.2%. Retail is inflated, because Romanian companies routinely add it to their authorised activities just in case. Joining on the fiscal code to the Ministry of Finance file `web_uu_an2024` would turn the bound into a measured count. Finally, the data.gov.ro server sends no file size and silently cut two downloads short, so the inputs should be checked against the advertised sizes of 675 MB for `od_firme.csv` and 400 MB for `od_caen_autorizat.csv`.
 
 ## Cut list
 
-**Where the time went:**
-- **Part 1, matching 23 entities by hand (most of it).** Deciding *which* entity a name means turned out to be the real work.
-- **Part 2, sourcing the figures and building four proxy derivations.**
-- **Part 5, mostly fighting a download server** that silently truncated files.
+Most of the time went into matching the 23 entities by hand, because deciding which entity a name means turned out to be the real work. The next largest share went into sourcing the Part 2 figures and building the four proxy derivations. Part 5 was mostly a fight with a download server that truncated files without saying so.
 
-**What I deliberately did not do:**
-- **Rows beyond the sample.** The other 77 would have added volume, not new lessons. The sample already covers every block A–N.
-- **The quant route.** The sample is built around traps, such as group versus entity, a brand versus a legal entity, and dead companies. A model trained on Romanian SMEs cannot see those.
-- **Opening every primary document.** Several figures come from press coverage of a filing (Google Ireland, FintechOS) or from a jobs portal (NHS GGC), not from the filing itself. They are labelled as such.
-- **Sourcing the recalled assumptions.** These are hotel occupancy and room prices, utility customers per employee, and revenue per bakery employee. They are marked in the code. Sourcing them is the next hour of work, not a reason to hide the derivations.
-- **Calibrating the ranges.** The widths are judgment, not measured error (see the third debate).
-- **Parsing the Companies House bulk accounts, and joining the register to `web_uu_an2024`.** Both are the obvious next step and are named in Parts 3 and 5. Neither was needed to show that the recipe works.
+What I deliberately left out:
+
+- **The other 77 rows**, which would have added volume rather than new lessons, since the sample already covers every block.
+- **The quant route.** The sample is built around traps such as group versus entity, brand versus company and dead firms, and a model trained on Romanian SMEs cannot see those.
+- **Opening every primary document.** Several figures come from press coverage of a filing, such as Google Ireland and FintechOS, or from a jobs portal, as with NHS GGC, and are labelled that way.
+- **Sourcing the assumptions from memory**: hotel occupancy and room rates, utility customers per employee and revenue per bakery employee. They are marked in the code, and sourcing them is the next hour of work, not a reason to hide the derivations.
+- **Calibrating the ranges**, which are judgment rather than measured error, as the third debate explains.
+- **Parsing the Companies House bulk accounts and joining the register to `web_uu_an2024`.** Both are the obvious next steps and neither was needed to show the recipe works.
 
 ## Debate topics
 
 ### Where I would not trust AI tools
 
-- **Any number or identity claim it cannot point to.** During this work, AI-summarised search results:
-  - offered Kellanova figures next to WK Kellogg's;
-  - quoted a lead-gen database's $5bn for a hotel chain with about 150 hotels;
-  - would have accepted Revelio's 122,763 "Temasek employees".
-- **Its own logic, too.** My first industry rule took the "first-listed" activity code. It looked sensible until I noticed the file is sorted by code.
-- **How I catch it:**
-  - every figure needs a URL that a second fetch confirms;
-  - every derived number gets a physical sanity check, such as revenue per room or per employee;
-  - every "it worked" gets checked against something independent. The downloads exited with code 0 while two of three files were truncated, and only comparing byte counts with the advertised sizes caught it.
+I would not trust an AI tool on any number or identity claim it cannot point to. During this work, AI-summarised search results put Kellanova figures next to WK Kellogg's, quoted a lead-generation database's $5bn for a chain of about 150 hotels, and would happily have accepted 122,763 "Temasek employees". Its logic needs the same scrutiny: my first industry rule took each company's first-listed activity code, which looked sensible until I noticed the file is sorted by code. The defence is simple to state and tedious to apply. Every figure needs a URL that a second fetch confirms, every derived number gets a physical sanity check such as revenue per room or per employee, and every "it worked" gets an independent check. The register downloads all reported success while two of the three files were truncated, and only comparing byte counts with the advertised sizes caught it.
 
 ### Knowing the dataset is wrong at scale
 
-There is no complete answer sheet, but there are partial ones.
-
-- **Score each proxy on companies that do report.** UK and Romanian filers, listed companies, and companies acquired with disclosed financials make a labelled subset for every recipe. If a proxy is wrong there, it is wrong everywhere.
-- **Look for internal contradictions:**
-  - a subsidiary larger than its parent;
-  - revenue per employee outside the range for its industry;
-  - a company whose size jumps tenfold between refreshes with no corporate event behind it.
-- **Watch how often independent sources disagree.** When the share of rows where two independent sources disagree starts rising, the pipeline has drifted, even if no single row looks wrong.
+There is no complete answer sheet, but there are partial ones. UK and Romanian filers, listed companies and acquired companies with disclosed financials form a labelled subset for every recipe, and a proxy that is wrong there is wrong everywhere. Internal contradictions are a second signal: a subsidiary larger than its parent, revenue per employee far outside its industry's range, or a company whose size jumps tenfold between refreshes with no corporate event behind it. The third is the disagreement rate between independent sources. When it starts rising, the pipeline has drifted, even if no single row looks wrong.
 
 ### Ranges you would bet on
 
-- **How to set the widths:** run each recipe on companies whose real number is known (the labelled subset above) and take the empirical error quantiles per proxy and per company type. An 80% range is then the 10th–90th percentile of measured error, not a feeling.
-- **How to tell a year later whether the ranges were honest:** collect the figures that surface in the meantime (new filings, IPO prospectuses, acquisition disclosures) and check what share fell inside their ranges. If 80% ranges catch 55%, they were dishonest. If they catch 98%, they were too wide to price on. Either way, the fix is to the width for that proxy, not to individual rows.
+I would set the widths by running each recipe on companies whose real figures are known and taking the empirical error quantiles for each proxy and company type. An 80% range is then the 10th to 90th percentile of measured error rather than a feeling. A year later, honesty can be checked against the figures that have surfaced since, from new filings, IPO prospectuses and acquisition disclosures. If 80% ranges caught only 55% of them they were dishonest, and if they caught 98% they were too wide to price on. Either way, the fix is to the width for that proxy, not to individual rows.
