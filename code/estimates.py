@@ -8,6 +8,7 @@ what moves.
 Run from the repo root:  python3 code/estimates.py
 """
 import csv
+from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,6 +19,36 @@ OUT_FILE = ROOT / "output" / "sample_estimates.csv"
 # exists to sort rows into price tiers. They are rounded and unsourced: replace
 # them with ECB reference rates for each row's own period before pricing on them.
 USD_PER = {"USD": 1.0, "EUR": 1.10, "GBP": 1.28, "RON": 0.22, "SGD": 0.75}
+
+
+# Ages are measured from this date, the day the file was last built, so the
+# file reads the same whenever it is rerun. Change it when the file is refreshed.
+REFERENCE_DATE = date(2026, 11, 20)
+STALE_MONTHS = 18
+
+# The date each figure belongs to: (revenue, employees). None means the source
+# gives no date, which the file says rather than guessing one.
+AS_OF = {
+    "IN-007": (date(2025, 9, 30), date(2025, 9, 30)),
+    "IN-008": (date(2025, 9, 30), date(2025, 9, 30)),
+    "IN-011": (date(2025, 12, 31), date(2025, 12, 31)),
+    "IN-015": (date(2024, 12, 31), date(2024, 12, 31)),
+    "IN-016": (date(2024, 12, 31), date(2024, 12, 31)),
+    "IN-028": (date(2024, 12, 28), date(2024, 12, 28)),
+    "IN-039": (date(2026, 3, 31), None),
+    "IN-046": (None, None),
+    "IN-049": (None, date(2025, 2, 13)),
+    "IN-055": (date(2025, 12, 31), date(2025, 12, 31)),
+    "IN-061": (date(2025, 12, 31), date(2025, 12, 31)),
+    "IN-064": (date(2025, 12, 31), date(2025, 12, 31)),
+    "IN-076": (date(2025, 3, 31), date(2023, 12, 31)),
+    "IN-093": (date(2024, 12, 31), None),
+    "IN-099": (date(2025, 12, 31), None),
+}
+
+
+def months_old(d):
+    return (REFERENCE_DATE.year - d.year) * 12 + REFERENCE_DATE.month - d.month
 
 
 def band(mid, low, high):
@@ -284,6 +315,7 @@ COLS = ["id", "licensee_name", "matched_entity", "outcome_bucket", "size_scope",
         "revenue_metric", "revenue_basis", "currency", "period",
         "revenue_m", "revenue_low_m", "revenue_high_m", "revenue_usd_m",
         "employees", "employees_low", "employees_high", "employees_basis", "employees_period",
+        "revenue_as_of", "employees_as_of", "oldest_figure_months", "age_flag",
         "sources", "derivation", "how_wrong_could_this_be", "client_action"]
 
 
@@ -317,6 +349,21 @@ def main():
                 employees_high=fmt(emp and emp["high"]), employees_basis=r["emp_basis"],
                 employees_period=r["emp_period"], sources=r["source"], derivation=r["derivation"],
                 how_wrong_could_this_be=r["how_wrong"], client_action=r["action"])
+            rev_d, emp_d = AS_OF.get(mid, (None, None))
+            rev_d = rev_d if rev else None
+            emp_d = emp_d if emp else None
+            dated = [d for d in (rev_d, emp_d) if d]
+            undated = (rev and not rev_d) or (emp and not emp_d)
+            oldest = max(months_old(d) for d in dated) if dated else None
+            flags = []
+            if oldest is not None and oldest > STALE_MONTHS:
+                flags.append(f"older than {STALE_MONTHS} months")
+            if undated:
+                flags.append("a figure has no date")
+            base.update(revenue_as_of=rev_d.isoformat() if rev_d else "",
+                        employees_as_of=emp_d.isoformat() if emp_d else "",
+                        oldest_figure_months="" if oldest is None else oldest,
+                        age_flag="; ".join(flags))
         else:
             derivation, action = NONE_ROWS.get(mid, ("Not estimated.", ""))
             base.update(revenue_basis="NONE", employees_basis="NONE",

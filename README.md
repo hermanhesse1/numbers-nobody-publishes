@@ -51,7 +51,7 @@ A number on its own does not survive the client's analyst, so each row carries t
 - **Scope** says which entity or group the number describes. Most of the risk sits here, not in the arithmetic.
 - **Metric** is revenue where revenue is meaningful and something more honest where it is not, such as portfolio value for Temasek or budget for the NHS board. Google Ireland's revenue is shown but flagged as the wrong measure.
 - **Basis** is one of `REPORTED`, `REPORTED_SEGMENT`, `SELF_DECLARED`, `PROXY` or `NONE`.
-- **Period** is the date the number belongs to.
+- **Period** is the date the number belongs to, repeated as a separate as-of date for revenue and for headcount. The file also gives the age in months of the older of the two, measured from 20 November 2026, and flags any figure more than 18 months old or with no date at all.
 - **A point value with a low and high** gives the range, which is zero-width only when the number comes straight from a filing.
 - **Sources, a derivation, an answer to "how wrong could this be" and a client action** complete each row, written so that someone can disagree with them.
 
@@ -92,7 +92,7 @@ I would not ship this as one file, but I would ship part of it, clearly labelled
 
 Two kinds of row I would hold back from pricing. The proxy rows for MSC and Drury show their working, and their inputs now come from listed peers and segment data. But peers are not the company itself: Drury's occupancy is its segment's, not its own, and most of MSC's terminal and logistics revenue still has no source. They are good enough to put a company in a tier, not to quote a number. The second kind is the rows where I chose the scope myself, namely Siemens Energy, Blue Origin, MSC, National Grid and Old Spice. The number is right for the entity I picked, but nobody yet knows whether that entity signed. Most of the error in this file is a scope error rather than an arithmetic one.
 
-My checks cannot see four things. They cannot tell whether the matched entity is the one on the contract; only the contract can. They cannot see errors my sources share: termene.ro, totalfirme.ro and targetare.ro all copy the same Ministry of Finance data, so three of them agreeing is really one source. They cannot see age, and several figures are already 12 to 20 months old while the base keeps moving, as Part 4 shows. And they cannot tell whether my ranges are honest: apart from small tests on container shipping and gas utilities, a ±20% is a judgment, not a measured error.
+My checks have four blind spots. They cannot tell whether the matched entity is the one on the contract; only the contract can. They cannot see errors my sources share: termene.ro, totalfirme.ro and targetare.ro all copy the same Ministry of Finance data, so three of them agreeing is really one source. Age is the one they can now show but not fix: six of the 15 rows with figures hold one more than 18 months old, the oldest being Brooklyn Union's headcount at 35 months, and four rely on a figure with no date, while the base keeps moving, as Part 4 shows. And they cannot tell whether my ranges are honest: apart from small tests on container shipping and gas utilities, a ±20% is a judgment, not a measured error.
 
 The next steps, in order of value per hour, would be these:
 
