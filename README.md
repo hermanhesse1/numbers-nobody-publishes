@@ -7,8 +7,9 @@ Can revenue and headcount be produced, with evidence that survives the client's 
 - `data/`: the client's list, my tagged version and the Part 1 matching file.
 - `output/sample_estimates.csv`: the client file, built by `code/estimates.py`, which holds every input, source and derivation.
 - `code/register.py` and `output/register_counts.txt`: the Part 5 counts.
+- `code/uk_accounts.py` and `output/uk_accounts_counts.txt`: the measured reach of the UK headcount tag.
 - [NOTES.md](NOTES.md): the full proxy ledger, both proxy tests and how the Part 5 line was drawn.
-- `big_data/` is ignored by git; Part 5 expects the ONRC register files in `big_data/register/` and the tourism ministry's accommodation list, exported from se.situr.gov.ro as CSV, in `big_data/tourism/`.
+- `big_data/` is ignored by git; Part 5 expects the ONRC register files in `big_data/register/` the tourism ministry's accommodation list, exported from se.situr.gov.ro as CSV, in `big_data/tourism/`, and Companies House daily bulk accounts zips in `big_data/ch/`.
 
 ## Sample
 
@@ -46,7 +47,7 @@ What survived, in brief; the full ledger with every discarded proxy is in [NOTES
 
 | Proxy | Verdict | Reach at scale |
 |---|---|---|
-| UK iXBRL headcount tag in micro accounts | Best find: a reported headcount where turnover is hidden | About 1.6 million UK companies a year, from a free bulk download |
+| UK iXBRL headcount tag in micro accounts | Best find: a reported headcount where turnover is hidden | Measured on 35,144 filings from three days of the free bulk download: 88.5% carry it, 61.4% with staff above zero, while only 1.0% report turnover. About 1.5 million companies a year |
 | Capacity × revenue per unit at listed peers | MSC about $68bn, Drury about $880m | About 154,000 Romanian companies; see Part 5 |
 | Customers per employee at gas utilities | Replaced by Brooklyn Union's own filing | Hundreds per country |
 | LinkedIn-based headcount trackers | Kept only where two agree; wrong for holdings | About 69 million company pages |
@@ -58,7 +59,7 @@ Two proxies were tested on companies that report. The shipping rate from two car
 
 I would ship part of it, labelled. The 10 revenue and 9 headcount figures from filings can go to the client's analyst today. I would hold back the MSC and Drury estimates, which rest on peer and segment data and are good for a tier rather than a price, and the rows where I chose the scope, such as Siemens Energy and MSC, because nobody yet knows which entity signed. Most of this file's error is scope, not arithmetic.
 
-My checks cannot see whether a match is the company on the contract, or errors my sources share, since three Romanian sites copy one ministry file. They can show age but not fix it: five rows hold a figure over 18 months old. Beyond the two tests, my range widths are judgment. Next, in order of value: ask the client for each contract's counterparty and who pays today; refresh the stale rows; parse the UK bulk accounts; test the remaining proxies, including on subsidiaries; and draw Part 5 from capacity registers instead of activity codes.
+My checks cannot see whether a match is the company on the contract, or errors my sources share, since three Romanian sites copy one ministry file. They can show age but not fix it: five rows hold a figure over 18 months old. Beyond the two tests, my range widths are judgment. Next, in order of value: ask the client for each contract's counterparty and who pays today; refresh the stale rows; match the UK licensees to the bulk accounts; test the remaining proxies, including on subsidiaries; and draw Part 5 from capacity registers instead of activity codes.
 
 ## Part 4: The room
 
@@ -84,7 +85,7 @@ Checked against the tourism ministry's list, only 45.5% of the line's accommodat
 - I did not take the other 77 rows, which would add volume rather than lessons, or the quant route, which cannot see the sample's traps.
 - I did not open every primary document; figures from press coverage of a filing are labelled that way.
 - Two proxies are tested; the rest of the range widths are judgment.
-- The UK bulk accounts parse and the Romanian vehicle register are the obvious next steps and were not needed to show the recipes work.
+- I measured the UK headcount tag on three days of bulk accounts rather than the whole archive, and did not check the Romanian vehicle register; both are next steps.
 
 ## Debate topics
 
