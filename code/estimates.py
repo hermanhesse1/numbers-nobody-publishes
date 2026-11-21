@@ -21,13 +21,11 @@ OUT_FILE = ROOT / "output" / "sample_estimates.csv"
 USD_PER = {"USD": 1.0, "EUR": 1.10, "GBP": 1.28, "RON": 0.22, "SGD": 0.75}
 
 
-# Ages are measured from this date, the day the file was last built, so the
-# file reads the same whenever it is rerun. Change it when the file is refreshed.
+# Ages are counted from this fixed date; update it on refresh.
 REFERENCE_DATE = date(2026, 11, 20)
 STALE_MONTHS = 18
 
-# The date each figure belongs to: (revenue, employees). None means the source
-# gives no date, which the file says rather than guessing one.
+# (revenue date, employees date); None means the source gives no date.
 AS_OF = {
     "IN-007": (date(2025, 9, 30), date(2025, 9, 30)),
     "IN-008": (date(2025, 9, 30), date(2025, 9, 30)),

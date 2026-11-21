@@ -14,3 +14,9 @@ industries inside the line, by main capacity group:
   Hospitals                   220   0.1%  counted in beds
   Air transport                79   0.1%  counted in aircraft
   Rail transport               34   0.0%  counted in rolling stock
+room counts from the tourism ministry list:
+  operators with a fiscal code and rooms:  18,680
+  accommodation companies in the line:     15,276
+    found in the list with a room count:   6,952 = 45.5%
+  listed operators that are living firms:  17,060
+    of which inside the line:              7,924

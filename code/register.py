@@ -24,12 +24,14 @@ Inputs, not committed, downloaded from data.gov.ro into big_data/register/:
 
 Run from the repo root:  python3 code/register.py
 """
+import csv
 from pathlib import Path
 
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 D = ROOT / "big_data" / "register"
+SITUR = ROOT / "big_data" / "tourism" / "situr_cazari.csv"
 
 OPERATING = "1048"
 # A status whose description contains any of these words disqualifies the company.
@@ -73,7 +75,7 @@ def main():
     living_mask = by_co.apply(lambda s: OPERATING in s and not s & dead_codes)
     doubtful = by_co.apply(lambda s: bool(s & set(DOUBTFUL)))
 
-    firme = read("od_firme.csv", usecols=["COD_INMATRICULARE"])
+    firme = read("od_firme.csv", usecols=["COD_INMATRICULARE", "CUI"]).drop_duplicates("COD_INMATRICULARE")
     in_firme = set(firme["COD_INMATRICULARE"])
     living = set(by_co.index[living_mask]) & in_firme
     n_living = len(living)
@@ -112,6 +114,32 @@ def main():
     print("industries inside the line, by main capacity group:")
     for g, n in top.items():
         print(f"  {g:22} {n:>8,}  {n / n_in:5.1%}  counted in {GROUPS[g][1]}")
+
+    if SITUR.exists():
+        check_rooms(firme, set(living), set(inside.index), main_group)
+
+
+def check_rooms(firme, living, inside, main_group):
+    # Ministry of Tourism list of classified units, exported from se.situr.gov.ro.
+    rows = list(csv.reader(open(SITUR, encoding="utf-8")))[2:]
+    rooms = {}
+    for r in rows:
+        cui, n = r[15].strip(), r[3].strip()
+        if cui.isdigit() and n.isdigit() and int(n) > 0:
+            rooms[cui] = rooms.get(cui, 0) + int(n)
+    listed = set(rooms)
+    living_f = firme[firme["COD_INMATRICULARE"].isin(living)]
+    acc = set(main_group.index[main_group == "Accommodation"])
+    acc_cuis = set(living_f.loc[living_f["COD_INMATRICULARE"].isin(acc), "CUI"])
+    found = acc_cuis & listed
+    operators = set(living_f["CUI"]) & listed
+    in_line = operators & set(living_f.loc[living_f["COD_INMATRICULARE"].isin(inside), "CUI"])
+    print("room counts from the tourism ministry list:")
+    print(f"  operators with a fiscal code and rooms:  {len(rooms):,}")
+    print(f"  accommodation companies in the line:     {len(acc):,}")
+    print(f"    found in the list with a room count:   {len(found):,} = {len(found) / len(acc):.1%}")
+    print(f"  listed operators that are living firms:  {len(operators):,}")
+    print(f"    of which inside the line:              {len(in_line):,}")
 
 
 if __name__ == "__main__":
