@@ -1,0 +1,55 @@
+# Working notes
+
+The detail behind the [README](README.md): how the matches were decided, every proxy tried with its tests, and how the Part 5 line was drawn.
+
+## Matching
+
+Matching turned out to be harder than it sounds, because the name on a contract is rarely the entity the numbers belong to. Seven of the 23 matched to a legal name different from the one typed in. FintechOS and Blue Origin are brands for FINTECH OS SRL and Blue Origin, LLC. NHS Greater Glasgow and Clyde is the operating name of a statutory body, Greater Glasgow Health Board. STEYN HOLDING S.A., SPF dropped its SPF status in 2014 and later became an S.à r.l. The Brooklyn address next to National Grid points to The Brooklyn Union Gas Company, not the UK group. Old Spice is a P&G product with no company of its own.
+
+Even an exact name match was rarely the end of it. Yazaki has three companies in Romania, Margot Bakery's entity is registered as a property letting business, Google Ireland's revenue covers ad sales across Europe, the Middle East and Africa, and "Siemens Energy" could be the listed group or any of its local companies. Matching a name is easy; deciding which entity the contract means is the actual work.
+
+## Proxy ledger: what I tried, what survived, how far it scales
+
+| Proxy | Used on | Verdict | Reach at scale |
+|---|---|---|---|
+| **UK iXBRL tag `AverageNumberEmployeesDuringPeriod`** | Margot Bakery, which files a headcount of 13 but no turnover | **Kept, and the best find.** It turns a "no data" micro company into a reported headcount | About 1.6 million UK companies a year: Companies House expects 2.2 million sets of accounts annually, and about 75% arrive in machine-readable form in its free bulk download. This needs a parser, not research |
+| Romanian balance sheets filed with the Ministry of Finance | Yazaki, FintechOS, Panificatie Moldova | Kept | Up to 1.3 million Romanian companies: the 1,296,440 living companies whose legal form must file accounts, counted by the first version of `code/register.py`, which is in the git history. How many actually file with staff above zero would take the Ministry of Finance file to count |
+| Revenue per unit of capacity at listed peers, a median of about $9,050 per TEU across six carriers | MSC, about $68bn with a range of $55bn to $76bn, adding cruises priced off Carnival and Royal Caribbean | Kept, and tested on four other carriers, as described below. MSC's terminals and logistics remain the weak slice, with only its African arm sourced | About 154,000 Romanian companies, 8.8% of the living register, once the recipe is extended from ships to vehicles, seats, rooms and beds. Part 5 has the count |
+| Rooms × 365 × occupancy × average room rate | Drury, about $880m with a range of $610m to $1.36bn | Kept. Occupancy and room rate come from segment and peer figures by Colliers, CoStar and Hilton, not Drury's own, and sources disagree on the hotel count, 130 against more than 150 | About 15,000 Romanian companies whose activities are mainly accommodation. The tourism ministry's list gives a room count for 6,952 of them, 45.5%, so the rooms input can be found for under half |
+| Customers divided by customers per employee | Brooklyn Union Gas, before its own filing turned up | **Replaced by a reported figure.** The ratio from three listed utilities predicted about 2,000 staff; the utility's regulatory filing reports 1,464, so the proxy was 37% too high. It worked within 10% on two standalone utilities, but this one is a subsidiary whose shared work sits in a separate National Grid company | Hundreds of companies per country at most, a rough judgment rather than a count: only regulated networks report customer numbers |
+| LinkedIn-based headcount trackers such as Revelio | Siemens Gamesa, 27,300 | Kept where two trackers agree within 3%. Discarded for Temasek, where Revelio shows 122,763 against Temasek's own figure of about 960 | LinkedIn lists about 69 million company pages, but the figure is safe only where the legal entity and the people are the same thing. Wrong for holdings, investment firms and brands |
+| Figures a company declares about itself, such as Drury's "over 6,500 team members" | Drury, MSC, NHS GGC, Temasek | Kept as `SELF_DECLARED`, with wider ranges because they are undated | Most mid-size and large companies; no count, because each statement has to be found and dated by hand |
+| Revenue from lead-generation databases | Drury | **Discarded.** LeadIQ's $5bn would mean over $500 a night with every room full, against segment rates of $128 to $159 | Universal, which is exactly what makes it dangerous |
+| Old headcounts and brand-sales estimates | Brooklyn Union's 3,651 staff from decades ago, Old Spice's $564m from 2013 | Discarded because they describe a different time | None |
+
+Two questions were put to every figure. The first is whether it describes the matched entity at the time claimed. That caught Kellanova figures turning up for WK Kellogg, the Temasek headcount, National Grid plc numbers next to the Brooklyn gas utility, and Google Ireland's regional revenue. The second is whether I would notice if it did not, and the honest answer is only where a second, independent number exists. Siemens Gamesa's segments add up to the group total, the MSC estimate fits the 2022 figure, and about 46 staff per hotel is plausible for Drury's format. Drury's revenue estimate also lands near RocketReach's $777m, which I kept only as a cross-check. Everywhere else the file rests on a single source, and the sources column shows which one.
+
+One proxy was also tested the way the third debate says every proxy should be. The first version priced MSC's container slots at about $8,650 per TEU, the rate at Hapag-Lloyd and Maersk. Applied to four other carriers that publish both revenue and fleet size, it under-predicted CMA CGM by 9%, COSCO by 8% and ONE by 10%, and over-predicted Evergreen by 25%, though Evergreen's fleet figure is undated and the weakest input in the test. Three misses in the same direction meant the two-carrier rate ran low, so the estimate now uses the median of all six carriers, and the range spans them. Four test companies is far too few to call the range calibrated, but it is measured rather than assumed, and it moved the answer by about $2bn.
+
+The gas-utility ratio got the same treatment, and the result was more useful because it failed. Tested on two standalone utilities, ONE Gas and NW Natural, it came within 10%. Tested on Brooklyn Union Gas itself, once its annual report to the New York regulator turned up a headcount of 1,464, it was 37% too high. The utility serves about 871 customers per employee, more than most of its peers, because much of its work is done by National Grid's shared service company and sits on another payroll. My earlier guess had been the opposite, that a dense city network would need more staff. The lesson is the same scope trap as Part 1, now showing up inside a proxy: a ratio learned from standalone companies overstates the staff of a subsidiary that borrows its people from the group.
+
+## How the Part 5 line was drawn
+
+The first decision is who counts as alive. The register holds 4,111,567 companies, and I count one as living if it carries status `1048 funcţiune`, meaning operating, and no status for being struck off, dissolved, in liquidation, insolvent, suspended or abandoned by its owners. That leaves 1,747,958. The dead statuses are matched by keyword against the official list of status codes, and the code list sits in the script so it can be challenged code by code.
+
+The line maps each capacity unit to the activity codes where it is the natural measure:
+
+- **Rooms or beds:** hotels, holiday lets and campsites.
+- **Seats or tables:** restaurants and bars.
+- **Licensed vehicles:** buses, taxis and road freight.
+- **Rolling stock, vessels and aircraft:** rail, water and air transport.
+- **Floor area:** warehousing.
+- **Beds:** hospitals.
+
+Most of these units have a public count somewhere: the tourism ministry's list of classified accommodation, the road transport authority's register of licensed vehicles, and ship and aircraft registers.
+
+The hard part is that the register lists the activities a company is authorised for, not its main activity, and the median living company holds four. Counting every company with a capacity code anywhere in its list gives 491,769, but that includes a great many firms that added transport or catering just in case. Counting only companies whose single code is a capacity code gives 85,567, which misses a hotel that is also authorised to run a restaurant and a gym. My line sits between the two: a company is inside when capacity activities make up at least half of its authorised codes. That gives 153,881. The industry ranking assigns each company to the capacity group holding most of its capacity codes, so unlike my first attempt the groups add up to the total.
+
+The line has four weaknesses:
+
+- **The recipe is only tested on part of it.** Part 2 tested it on accommodation and shipping, which is about 16,000 of the 154,000 companies. Road transport, two thirds of the line, rests on an untested revenue-per-vehicle figure, and much of it is single-vehicle taxi and haulage firms.
+- **Having a public count is not the same as finding one.** I tested this for accommodation against the tourism ministry's list of 32,196 classified units, which gives a fiscal code and a room count for 18,680 operators. Only 6,952 of the 15,276 accommodation companies in the line, 45.5%, appear in it with rooms. The test also ran the other way: of the 17,060 living companies the list names as running classified accommodation, only 7,924 fall inside the line, because the rest hold too many other authorised activities. For accommodation the ministry's list is a better line than activity codes, and the vehicle register for road transport was not checked.
+- **Some companies are probably zombies.** 12,202 of those inside carry an expired registered office or expired directors; without them the line is 141,679.
+- **The downloads need checking.** The data.gov.ro server sends no file size and silently cut two downloads short, so the inputs should be checked against the advertised sizes of 675 MB for `od_firme.csv` and 400 MB for `od_caen_autorizat.csv`.
+
+My first attempt at this part drew the line on legal form, counting every company required to file accounts. That came to 74% of the living register, but it measured the register's mix of legal forms rather than where any proxy works, so I replaced it.
