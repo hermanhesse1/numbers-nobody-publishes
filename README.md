@@ -96,10 +96,11 @@ My checks have four blind spots. They cannot tell whether the matched entity is 
 
 The next steps, in order of value per hour, would be these:
 
-1. Ask the client for the counterparty name and address on each contract. That fixes scope on around nine of the 23 rows, more than any amount of research could.
-2. Parse the free Companies House bulk accounts to get a reported headcount for every UK licensee automatically.
-3. Replace peer and segment benchmarks with the company's own figures where any exist, such as Drury's occupancy from STR, the way the gas utility's own regulatory filing replaced its estimated headcount.
-4. Extend the container-shipping test to every proxy, such as listed hotel groups for the rooms formula, so that measured error sets every range width instead of my judgment.
+1. Ask the client, for each contract, for the counterparty's name and address and who pays today. That settles scope on about ten of the 23 rows, and tells us who now holds the four licences signed by companies that are dead or never traded.
+2. Refresh the six rows flagged as older than 18 months. Some newer figures already exist, such as Yazaki's 2025 filing on termene.ro, so this is cheap.
+3. Parse the free Companies House bulk accounts to get a reported headcount for every UK licensee automatically.
+4. Test every remaining proxy on companies that report, and include subsidiaries in the test set. The gas test showed that a ratio learned from standalone companies can miss a subsidiary by more than a third.
+5. Draw the Part 5 line from capacity registers rather than activity codes wherever a register exists: the tourism ministry's list for accommodation, then the road transport authority's vehicle register for the largest group.
 
 ## Part 4: The room
 
