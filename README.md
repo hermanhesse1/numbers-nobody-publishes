@@ -5,7 +5,8 @@ Can revenue and headcount be produced, with evidence that survives the client's 
 ## Repo layout
 
 - `data/`: the client's list, my tagged version and the Part 1 matching file.
-- `output/sample_estimates.csv`: the client file, built by `code/estimates.py`, which holds every input, source and derivation.
+- `output/licensee_sizes.xlsx`: the file I would send the client, built by `code/build_workbook.py`.
+- `output/sample_estimates.csv`: the same data as CSV, built by `code/estimates.py`, which holds every input, source and derivation.
 - `code/register.py` and `output/register_counts.txt`: the Part 5 counts.
 - `code/uk_accounts.py` and `output/uk_accounts_counts.txt`: the measured reach of the UK headcount tag.
 - [NOTES.md](NOTES.md): the full proxy ledger, both proxy tests and how the Part 5 line was drawn.
@@ -34,7 +35,7 @@ The two misses are different results. Meridian is one common word that nobody co
 
 I took the detective route, because the sample was chosen for traps that a model trained on Romanian SMEs cannot see.
 
-Every row in the client file carries its scope, the metric used, its basis, as-of dates with the age of the older figure, a point value with a low and high, sources, a derivation, an answer to "how wrong could this be" and a client action. Where revenue misleads, the file gives a more honest measure: portfolio value for Temasek, budget for the NHS board, headcount for Google Ireland.
+The client gets [output/licensee_sizes.xlsx](output/licensee_sizes.xlsx): a summary tab with each licensee's size tier, how sure we are and one action, a full data tab, and a page on how to read it. Every row carries its scope, the metric used, its basis, as-of dates with the age of the older figure, a point value with a low and high, sources, a derivation, an answer to "how wrong could this be" and a client action. Where revenue misleads, the file gives a more honest measure: portfolio value for Temasek, budget for the NHS board, headcount for Google Ireland.
 
 | Basis | Revenue | Employees |
 |---|---|---|
