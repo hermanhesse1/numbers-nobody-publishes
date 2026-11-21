@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MATCH_FILE = ROOT / "data" / "sample_matching.csv"
 OUT_FILE = ROOT / "output" / "sample_estimates.csv"
 
-# Approximate average rates for 2024-25, used ONLY for the usd_m column, which
+# Approximate average rates for 2024 and 2025, used ONLY for the usd_m column, which
 # exists to sort rows into price tiers. They are rounded and unsourced: replace
 # them with ECB reference rates for each row's own period before pricing on them.
 USD_PER = {"USD": 1.0, "EUR": 1.10, "GBP": 1.28, "RON": 0.22, "SGD": 0.75}
@@ -204,7 +204,7 @@ ROWS = [
     dict(id="IN-039", scope="Temasek Holdings, counting its own staff only",
          rev_metric="Net portfolio value at market value", rev_basis="REPORTED", cur="SGD", period="31 Mar 2026",
          rev=band(518000, 518000, 518000),
-         emp=band(960, 900, 1000), emp_basis="SELF_DECLARED", emp_period="2025-26",
+         emp=band(960, 900, 1000), emp_basis="SELF_DECLARED", emp_period="2025 or 2026",
          source="Temasek Review 2026 media release; Temasek careers page, which gives about 960 people in 13 offices",
          derivation="Revenue means little for an investment company, so portfolio value is given instead. Revelio Labs shows 122,763 employees because it counts the staff of portfolio companies, so it was discarded.",
          how_wrong="Portfolio value is exact. The headcount comes from an undated page and is good to about 5%.",
