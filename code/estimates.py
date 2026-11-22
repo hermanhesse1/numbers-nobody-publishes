@@ -90,24 +90,23 @@ def msc_group_revenue():
 
 
 def drury_revenue():
-    """Drury revenue, in USD m, as hotels x rooms x 365 x occupancy x room rate, plus 3%.
+    """Drury revenue, in USD m, as hotels x rooms x 365 x occupancy x room rate, plus 11%.
 
     Hotels: 130 to 150. The company says more than 150, which may include hotels
       still being built; Lodging Magazine counts 130 operating.
     Rooms per hotel: 160 to 210. A sample of 50 properties on Lodging Development
       averages 208 rooms but leans towards the newer, larger Plaza hotels; the
       160 floor is an assumption.
-    Occupancy: 61% to 72%. Upper-midscale hotels ran 61.4% in Colliers' Q4 2023
-      brand report, all US hotels 63.0% in 2024 according to CoStar, and Hilton's
-      system 72.1% in 2024. Drury's guest-satisfaction record suggests it sits
-      above its segment, so the midpoint is 66%.
+    Occupancy: 61% to 75%. Upper midscale ran 61.4% (Colliers, Q4 2023), all US
+      hotels 63.0% (CoStar, 2024), Apple Hospitality and Summit 74% to 75% (2024).
     Room rate: $128 to $159. Upper midscale averaged $128.26 in Colliers' Q4 2023
       report and all US hotels $158.67 in 2024 according to CoStar.
+    Other revenue: 11% of rooms revenue, measured at Apple Hospitality and Summit.
     """
     def rev(hotels, rooms_per_hotel, occ, adr):
-        return hotels * rooms_per_hotel * 365 * occ * adr * 1.03 / 1e6
+        return hotels * rooms_per_hotel * 365 * occ * adr * 1.11 / 1e6
 
-    return band(rev(140, 180, 0.66, 140), rev(130, 160, 0.61, 128), rev(150, 210, 0.72, 159))
+    return band(rev(140, 180, 0.66, 140), rev(130, 160, 0.61, 128), rev(150, 210, 0.75, 159))
 
 
 def kedny_employees():
@@ -290,9 +289,9 @@ ROWS = [
          rev_metric="Revenue", rev_basis="PROXY", cur="USD", period="2025",
          rev=band(round(drury["mid"], -1), round(drury["low"], -1), round(drury["high"], -1)),
          emp=band(6500, 6000, 7000), emp_basis="SELF_DECLARED", emp_period="about 2025",
-         source="Staff and the upper hotel count from the About page on druryhotels.com, which states more than 150 hotels and over 6,500 team members; 130 operating hotels from Lodging Magazine; rooms per hotel from a sample on Lodging Development; occupancy and room rates from Colliers, CoStar and Hilton's 2024 results",
-         derivation="Revenue is hotels times rooms times 365 times occupancy times average room rate. RocketReach's USD 777m was kept as a cross-check; LeadIQ's USD 5bn was discarded because it implies over USD 500 a night with every room full, against segment rates of USD 128 to 159.",
-         how_wrong="Somewhere between 30% below and 55% above. Occupancy and room rate come from segment and peer figures rather than Drury's own, and even the hotel count varies between 130 and 150 by source. About 46 staff per hotel is plausible for this kind of hotel.",
+         source="Staff and the upper hotel count from the About page on druryhotels.com, which states more than 150 hotels and over 6,500 team members; 130 operating hotels from Lodging Magazine; rooms per hotel from a sample on Lodging Development; occupancy and room rates from Colliers, CoStar, Hilton, Apple Hospitality and Summit 2024 results",
+         derivation="Revenue is hotels times rooms times 365 times occupancy times average room rate, plus 11% for other revenue. Tested on Apple Hospitality and Summit, the formula came within 7% using their own occupancy and rates, but was about 30% low using Drury's segment inputs, so the inputs, not the formula, carry the risk. RocketReach's USD 777m was kept as a cross-check; LeadIQ's USD 5bn was discarded because it implies over USD 500 a night with every room full, against segment rates of USD 128 to 159.",
+         how_wrong="Somewhere between 30% below and 60% above. Occupancy and room rate come from segment and peer figures rather than Drury's own, and even the hotel count varies between 130 and 150 by source. About 46 staff per hotel is plausible for this kind of hotel.",
          action="None needed for tiering: the chain is large under any assumption."),
 ]
 

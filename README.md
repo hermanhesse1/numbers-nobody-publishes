@@ -49,18 +49,18 @@ What survived, in brief; the full ledger with every discarded proxy is in [NOTES
 | Proxy | Verdict | Reach at scale |
 |---|---|---|
 | UK iXBRL headcount tag in micro accounts | Best find: a reported headcount where turnover is hidden | Measured on 35,144 filings from three days of the free bulk download: 88.5% carry it, 61.4% with staff above zero, while only 1.0% report turnover. About 1.5 million companies a year |
-| Capacity × revenue per unit at listed peers | MSC about $68bn, Drury about $880m | About 154,000 Romanian companies; see Part 5 |
+| Capacity × revenue per unit at listed peers | MSC about $68bn, Drury about $940m | About 154,000 Romanian companies; see Part 5 |
 | Customers per employee at gas utilities | Replaced by Brooklyn Union's own filing | Hundreds per country |
 | LinkedIn-based headcount trackers | Kept only where two agree; wrong for holdings | About 69 million company pages |
 | Lead-generation database revenue | Discarded: Drury at $5bn means over $500 a room a night | Everywhere, which is the danger |
 
-Two proxies were tested on companies that report. The shipping rate from two carriers under-predicted three others by 8 to 10%, so MSC now uses a six-carrier median. The gas ratio came within 10% on two standalone utilities but was 37% too high on Brooklyn Union Gas, whose filing shows 1,464 staff, because its shared work sits in a separate National Grid company. A ratio learned from standalone firms overstates a subsidiary: the Part 1 scope trap again, inside a proxy.
+Three proxies were tested on companies that report. The shipping rate from two carriers under-predicted three others by 8 to 10%, so MSC now uses a six-carrier median. The gas ratio came within 10% on two standalone utilities but was 37% too high on Brooklyn Union Gas, whose filing shows 1,464 staff, because its shared work sits in a separate National Grid company. A ratio learned from standalone firms overstates a subsidiary: the Part 1 scope trap again, inside a proxy. The hotel formula came within 7% on Apple Hospitality and Summit with their own occupancy and room rates, but about 30% low with Drury's segment inputs, so for Drury the inputs, not the formula, carry the risk.
 
 ## Part 3: The call
 
 I would ship part of it, labelled. The 10 revenue and 9 headcount figures from filings can go to the client's analyst today. I would hold back the MSC and Drury estimates, which rest on peer and segment data and are good for a tier rather than a price, and the rows where I chose the scope, such as Siemens Energy and MSC, because nobody yet knows which entity signed. Most of this file's error is scope, not arithmetic.
 
-My checks cannot see whether a match is the company on the contract, or errors my sources share, since three Romanian sites copy one ministry file. They can show age but not fix it: five rows hold a figure over 18 months old. Beyond the two tests, my range widths are judgment. Next, in order of value: ask the client for each contract's counterparty and who pays today; refresh the stale rows; match the UK licensees to the bulk accounts; test the remaining proxies, including on subsidiaries; and draw Part 5 from capacity registers instead of activity codes.
+My checks cannot see whether a match is the company on the contract, or errors my sources share, since three Romanian sites copy one ministry file. They can show age but not fix it: five rows hold a figure over 18 months old. Beyond the three tests, my range widths are judgment. Next, in order of value: ask the client for each contract's counterparty and who pays today; refresh the stale rows; match the UK licensees to the bulk accounts; test the remaining proxies, including on subsidiaries; and draw Part 5 from capacity registers instead of activity codes.
 
 ## Part 4: The room
 
@@ -85,7 +85,7 @@ Checked against the tourism ministry's list, only 45.5% of the line's accommodat
 - Most time went into matching by hand, then sourcing the Part 2 figures; Part 5 was mostly a fight with a download server that cut files short without saying so.
 - I did not take the other 77 rows, which would add volume rather than lessons, or the quant route, which cannot see the sample's traps.
 - I did not open every primary document; figures from press coverage of a filing are labelled that way.
-- Two proxies are tested; the rest of the range widths are judgment.
+- Three proxies are tested; the rest of the range widths are judgment.
 - I measured the UK headcount tag on three days of bulk accounts rather than the whole archive, and did not check the Romanian vehicle register; both are next steps.
 
 ## Debate topics
@@ -94,4 +94,4 @@ Checked against the tourism ministry's list, only 45.5% of the line's accommodat
 
 **Knowing the dataset is wrong at scale.** Filers and listed companies are a labelled subset to score every recipe on, and internal contradictions, such as a subsidiary larger than its parent, flag the rest. A rising disagreement rate between independent sources means the pipeline has drifted even when no row looks wrong.
 
-**Ranges you would bet on.** Set each width from the measured error of that proxy on companies that report, as done here for shipping and gas. A year later, check what share of newly published figures fell inside: an 80% range should catch about 80%, and the fix for a miss is to the proxy's width, not to single rows.
+**Ranges you would bet on.** Set each width from the measured error of that proxy on companies that report, as done here for shipping, gas utilities and hotels. A year later, check what share of newly published figures fell inside: an 80% range should catch about 80%, and the fix for a miss is to the proxy's width, not to single rows.
