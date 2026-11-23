@@ -12,6 +12,17 @@ Can revenue and headcount be produced, with evidence that survives the client's 
 - [NOTES.md](NOTES.md): the full proxy ledger, both proxy tests and how the Part 5 line was drawn.
 - `big_data/` is ignored by git; Part 5 expects the ONRC register files in `big_data/register/` the tourism ministry's accommodation list, exported from se.situr.gov.ro as CSV, in `big_data/tourism/`, and Companies House daily bulk accounts zips in `big_data/ch/`.
 
+## How to run
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python code/estimates.py
+.venv/bin/python code/build_workbook.py
+```
+
+`code/register.py` and `code/uk_accounts.py` run the same way once their input files are in `big_data/`. All four were rerun from a clean environment and reproduce the committed outputs exactly.
+
 ## Sample
 
 I first tagged all 100 names by why each would be hard to size, giving 14 blocks such as the Siemens family, spin-offs, banks, brands, ambiguous names, dead companies and Luxembourg holdings. The sample takes 23 entities with at least one from every block, weighted to where the client's money is at risk: five micro businesses, where "three people and a mailbox" hides, and two large private groups, where a small-tier licence may cover a multinational. Fastenal is the control case. The other 77 would mostly have repeated traps already in the sample.
