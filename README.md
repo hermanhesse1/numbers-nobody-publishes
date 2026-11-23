@@ -18,16 +18,11 @@ Can revenue and headcount be produced, with evidence that survives the client's 
 ## How to run
 
 ```bash
-python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
-.venv/bin/python -m pytest -q tests
-.venv/bin/python code/estimates.py
-.venv/bin/python code/build_workbook.py
-.venv/bin/python code/backtest.py > output/backtest.txt
-.venv/bin/python code/check.py
+make setup
+make all
 ```
 
-GitHub Actions runs the same steps on every push. `code/uk_licensees.py` reads the public Companies House site and needs no key. `code/register.py` and `code/uk_accounts.py` need the large inputs in `big_data/`, which git ignores: `code/fetch_data.py --download` fetches them and checks each against the manifest. The Romanian register files are overwritten by each new snapshot and Companies House keeps a daily file for only 60 days, so a checksum mismatch means a newer version, not a broken one. All scripts were rerun from a clean environment and reproduce the committed outputs exactly.
+`make test` runs the tests alone. They cover the proxy arithmetic, currency conversion, missing and zero values, inactive companies, dates, registry identifiers, filing formats and changed input layouts, and they fail if a revenue figure looks like thousands entered as millions. GitHub Actions runs the same steps on every push. `code/uk_licensees.py` reads the public Companies House site and needs no key. `code/register.py` and `code/uk_accounts.py` need the large inputs in `big_data/`, which git ignores: `code/fetch_data.py --download` fetches them and checks each against the manifest. The Romanian register files are overwritten by each new snapshot and Companies House keeps a daily file for only 60 days, so a checksum mismatch means a newer version, not a broken one. All scripts were rerun from a clean environment and reproduce the committed outputs exactly.
 
 ## Sample
 

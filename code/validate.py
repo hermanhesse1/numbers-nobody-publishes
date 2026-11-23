@@ -31,6 +31,27 @@ def check_band(mid, low, high, what="value"):
         raise ValueError(f"{what}: range out of order {low}, {mid}, {high}")
 
 
+# Revenue per employee runs from about USD 0.06m at a Romanian plant to 19.5m at Google
+# Ireland, a regional booking hub. A thousands-for-millions slip moves a figure 1,000 times.
+USD_M_RANGE = (0.001, 1_000_000)
+USD_M_PER_EMPLOYEE = (0.005, 50)
+
+
+def check_revenue_scale(usd_m, employees=None, what="revenue"):
+    """Reject revenue that is implausible in size, which catches figures in the wrong unit."""
+    if usd_m is None or usd_m == 0:
+        return
+    lo, hi = USD_M_RANGE
+    if not lo <= usd_m <= hi:
+        raise ValueError(f"{what}: USD {usd_m}m is outside {lo} to {hi}m; check the unit")
+    if employees:
+        per_head = usd_m / employees
+        lo, hi = USD_M_PER_EMPLOYEE
+        if not lo <= per_head <= hi:
+            raise ValueError(f"{what}: USD {per_head:.4f}m per employee is outside {lo} to {hi}m; "
+                             "check whether revenue is in thousands or millions")
+
+
 def check_as_of(d, reference, earliest=date(2000, 1, 1)):
     if d is None:
         return

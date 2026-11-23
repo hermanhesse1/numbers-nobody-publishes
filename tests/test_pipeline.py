@@ -37,7 +37,7 @@ def test_inputs_with_a_changed_layout_are_rejected(tmp_path):
 
 
 def row(**kw):
-    base = dict(id="IN-061", cur="GBP", rev=estimates.band(1, 1, 1), emp=estimates.band(13, 13, 13))
+    base = dict(id="IN-061", cur="GBP", rev_metric="Revenue", rev=estimates.band(0.6, 0.6, 0.6), emp=estimates.band(13, 13, 13))
     base.update(kw)
     return base
 

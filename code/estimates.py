@@ -12,7 +12,7 @@ from datetime import date
 from pathlib import Path
 
 from validate import (check_as_of, check_band, check_currency, check_licensee_id, check_registration_ids,
-                      require_columns)
+                      check_revenue_scale, require_columns)
 
 ROOT = Path(__file__).resolve().parents[1]
 MATCH_FILE = ROOT / "data" / "sample_matching.csv"
@@ -23,6 +23,7 @@ INPUTS_FILE = ROOT / "data" / "proxy_inputs.csv"
 # exists to sort rows into price tiers. They are rounded and unsourced: replace
 # them with ECB reference rates for each row's own period before pricing on them.
 USD_PER = {"USD": 1.0, "EUR": 1.10, "GBP": 1.28, "RON": 0.22, "SGD": 0.75}
+NOT_REVENUE = ("none", "Net portfolio value at market value", "Annual budget")
 
 
 # Ages are counted from this fixed date; update it on refresh.
@@ -49,6 +50,14 @@ AS_OF = {
 }
 
 
+def usd_value(rev, cur, metric):
+    """Point revenue in USD m for ranking, or None when the metric is not revenue."""
+    if not rev or metric in NOT_REVENUE:
+        return None
+    check_currency(cur, USD_PER)
+    return rev["mid"] * USD_PER[cur]
+
+
 def months_old(d):
     return (REFERENCE_DATE.year - d.year) * 12 + REFERENCE_DATE.month - d.month
 
@@ -57,7 +66,6 @@ def band(mid, low, high):
     return {"mid": mid, "low": low, "high": high}
 
 
-# ---------------------------------------------------------------- proxy maths
 def load_inputs(path=INPUTS_FILE):
     with open(path, newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
@@ -103,95 +111,6 @@ def margot_revenue(p=P):
 
 
 # ---------------------------------------------------------------- proxy maths
-def msc_group_revenue():
-    """MSC group revenue 2024, in USD bn, as container plus cruise plus everything else.
-
-    Container: fleet capacity times revenue per TEU of capacity at other carriers.
-      2024 revenue per TEU of capacity, from each carrier's results and Alphaliner:
-        Hapag-Lloyd liner shipping: $20.3bn on 2.346m TEU, about $8,650.
-        Maersk Ocean: $37.4bn on 4.31m TEU, about $8,675.
-        CMA CGM shipping: $36.49bn on 3.85m TEU, about $9,485.
-        COSCO container shipping: $31.1bn on 3.3m TEU, about $9,425.
-        ONE, year to March 2025: $19.2bn on just over 2m TEU, about $9,600.
-        Evergreen: $12.7bn on an undated 1.84m TEU, about $6,900.
-      The first version used only Hapag-Lloyd and Maersk. Tested on the other
-      four, it under-predicted the three with reliable capacity figures by 8% to
-      10%, so the rate now uses the median of all six, about $9,050, and the band
-      of $7,500 to $9,600 spans them, with Evergreen's weak capacity figure
-      setting the floor.
-      MSC had 6.3m TEU in January 2025 after adding 0.69m during 2024, so about
-      5.95m on average.
-    Cruise: 4.6m passengers in 2024 times revenue per passenger. Carnival took
-      $25.0bn from 13.5m passengers, about $1,850 each, and Royal Caribbean $16.5bn
-      from 8.56m, about $1,930. MSC sells cheaper European cruises, so the midpoint
-      is set below both at $1,700, and the $1,500 floor is an assumption.
-    Other: terminals, MEDLOG road and rail logistics, Africa Global Logistics and
-      car carriers. Bolloré's African operations, the core of what MSC bought as
-      AGL, turned over about EUR 3.1bn in 2021 according to inforMARE, a single
-      source. The rest of the slice has no source, so the band of $3.5bn to $10bn
-      is wide on purpose.
-    """
-    teu_avg = 5.95  # million TEU
-    container = band(teu_avg * 9050 / 1000, teu_avg * 7500 / 1000, teu_avg * 9600 / 1000)
-    cruise = band(4.6 * 1.70, 4.6 * 1.50, 4.6 * 1.93)
-    other = band(6.0, 3.5, 10.0)
-    return {k: container[k] + cruise[k] + other[k] for k in ("mid", "low", "high")}
-
-
-def drury_revenue():
-    """Drury revenue, in USD m, as hotels x rooms x 365 x occupancy x room rate, plus 11%.
-
-    Hotels: 130 to 150. The company says more than 150, which may include hotels
-      still being built; Lodging Magazine counts 130 operating.
-    Rooms per hotel: 160 to 210. A sample of 50 properties on Lodging Development
-      averages 208 rooms but leans towards the newer, larger Plaza hotels; the
-      160 floor is an assumption.
-    Occupancy: 61% to 75%. Upper midscale ran 61.4% (Colliers, Q4 2023), all US
-      hotels 63.0% (CoStar, 2024), Apple Hospitality and Summit 74% to 75% (2024).
-    Room rate: $128 to $159. Upper midscale averaged $128.26 in Colliers' Q4 2023
-      report and all US hotels $158.67 in 2024 according to CoStar.
-    Other revenue: 11% of rooms revenue, measured at Apple Hospitality and Summit.
-    """
-    def rev(hotels, rooms_per_hotel, occ, adr):
-        return hotels * rooms_per_hotel * 365 * occ * adr * 1.11 / 1e6
-
-    return band(rev(140, 180, 0.66, 140), rev(130, 160, 0.61, 128), rev(150, 210, 0.75, 159))
-
-
-def kedny_employees():
-    """Brooklyn Union Gas headcount as customers divided by customers per employee.
-
-    No longer used for the client file, because the utility's own filing reports
-    its headcount. Kept as the record of a test: how well does the proxy do on a
-    company whose real figure is known?
-
-    Customers per employee at listed US gas utilities in 2024:
-      Spire: 1.74m customers and 3,475 employees, about 500.
-      Atmos Energy: 3.3m customers and 5,200 employees, about 635.
-      Southwest Gas: 2.26m customers and 2,435 employees, about 927.
-    Tested on two other utilities, the middle ratio of 635 predicts ONE Gas at
-    3,620 staff against about 3,900, and NW Natural at 1,260 against about
-    1,400: 7% and 10% too low. On Brooklyn Union Gas, with 1,274,648 average
-    customers in 2023, it predicts about 2,000 staff against 1,464 reported, 37%
-    too high. The utility runs at about 871 customers per employee because much
-    of its work is done by National Grid's shared service company.
-    """
-    customers = 1_274_648
-    return band(customers / 635, customers / 927, customers / 500)
-
-
-def margot_revenue():
-    """Margot Bakery revenue, in GBP m, as 13 employees x revenue per employee.
-
-    The 13 average employees are reported in the FY2025 micro accounts under the
-    tag AverageNumberEmployeesDuringPeriod. Greggs took GBP 2.01bn in 2024 with
-    about 33,000 staff, roughly GBP 61,000 each, which sets the top of the band:
-    a single artisan bakery has none of Greggs' scale. The floor of GBP 35,000 and
-    the midpoint of GBP 48,000 are assumptions.
-    """
-    return band(13 * 0.048, 13 * 0.035, 13 * 0.061)
-
-
 msc = msc_group_revenue()
 drury = drury_revenue()
 kedny = kedny_employees()
@@ -376,6 +295,8 @@ def validate_rows(rows, matches, as_of=None):
         for key in ("rev", "emp"):
             if r[key]:
                 check_band(r[key]["mid"], r[key]["low"], r[key]["high"], f"{r['id']} {key}")
+        check_revenue_scale(usd_value(r["rev"], r["cur"], r["rev_metric"]),
+                            r["emp"]["mid"] if r["emp"] else None, r["id"])
         for d in as_of.get(r["id"], (None, None)):
             check_as_of(d, REFERENCE_DATE)
 
@@ -409,8 +330,7 @@ def main():
         if mid in by_id:
             r = by_id[mid]
             rev, emp = r["rev"], r["emp"]
-            usd = rev["mid"] * USD_PER[r["cur"]] if rev and r["rev_metric"] not in (
-                "none", "Net portfolio value at market value", "Annual budget") else None
+            usd = usd_value(rev, r["cur"], r["rev_metric"])
             base.update(
                 size_scope=r["scope"], revenue_metric=r["rev_metric"], revenue_basis=r["rev_basis"],
                 currency=r["cur"] if rev else "", period=r["period"],
