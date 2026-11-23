@@ -10,6 +10,7 @@ Can revenue and headcount be produced, with evidence that survives the client's 
 - `code/register.py` and `output/register_counts.txt`: the Part 5 counts.
 - `code/uk_accounts.py` and `output/uk_accounts_counts.txt`: the measured reach of the UK headcount tag.
 - `code/uk_licensees.py` and `output/uk_licensees.csv`: the same tag read automatically for the eight UK licensees.
+- `code/backtest.py` and `output/backtest.txt`: how often the proxy ranges hold the true figure on companies that report.
 - `code/check.py`: checks every range, date flag and source in the outputs, and every README figure against the outputs.
 - [NOTES.md](NOTES.md): the full proxy ledger, both proxy tests and how the Part 5 line was drawn.
 - `big_data/` is ignored by git; Part 5 expects the ONRC register files in `big_data/register/`, the tourism ministry's accommodation list, exported from se.situr.gov.ro as CSV, in `big_data/tourism/`, and Companies House daily bulk accounts zips in `big_data/ch/`.
@@ -21,6 +22,7 @@ python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 .venv/bin/python code/estimates.py
 .venv/bin/python code/build_workbook.py
+.venv/bin/python code/backtest.py > output/backtest.txt
 .venv/bin/python code/check.py
 ```
 
@@ -74,7 +76,7 @@ Three proxies were tested on companies that report. The shipping rate from two c
 
 I would ship part of it, labelled. The 10 revenue and 9 headcount figures from filings can go to the client's analyst today. I would hold back the MSC and Drury estimates, which rest on peer and segment data and are good for a tier rather than a price, and the rows where I chose the scope, such as Siemens Energy and MSC, because nobody yet knows which entity signed.
 
-My checks cannot see whether a match is the company on the contract, or errors my sources share, since three Romanian sites copy one ministry file. They can show age but not fix it: five rows hold a figure over 18 months old. Beyond the three tests, my range widths are judgment. Next, in order of value: ask the client for each contract's counterparty and who pays today; refresh the stale rows; test the remaining proxies, including on subsidiaries; and draw Part 5 from capacity registers instead of activity codes, starting with a data request to the road transport authority for vehicle counts.
+My checks cannot see whether a match is the company on the contract, or errors my sources share, since three Romanian sites copy one ministry file. They can show age but not fix it: five rows hold a figure over 18 months old. On the 11 companies used to test the proxies, the ranges held the true figure 8 times, so they behave like 70% ranges, not the 90% a client would assume. Next, in order of value: ask the client for each contract's counterparty and who pays today; refresh the stale rows; test the remaining proxies, including on subsidiaries; and draw Part 5 from capacity registers instead of activity codes, starting with a data request to the road transport authority for vehicle counts.
 
 ## Part 4: The room
 
@@ -99,7 +101,7 @@ Checked against the tourism ministry's list, only 45.5% of the line's accommodat
 - Most time went into matching by hand, then sourcing the Part 2 figures; Part 5 was mostly a fight with a download server that cut files short without saying so.
 - I did not take the other 77 rows, which would add volume rather than lessons, or the quant route, which cannot see the sample's traps.
 - I did not open every primary document; figures from press coverage of a filing are labelled that way.
-- Three proxies are tested; the rest of the range widths are judgment.
+- Three proxies are tested on 11 companies; the ranges of untested proxies are judgment.
 - I measured the UK headcount tag on three days of bulk accounts rather than the whole archive. I did not scrape the Romanian road transport register, because its robots.txt disallows automated access; matching it needs the authority's permission.
 
 ## Debate topics
@@ -108,4 +110,4 @@ Checked against the tourism ministry's list, only 45.5% of the line's accommodat
 
 **Knowing the dataset is wrong at scale.** Filers and listed companies are a labelled subset to score every recipe on, and internal contradictions, such as a subsidiary larger than its parent, flag the rest. A rising disagreement rate between independent sources means the pipeline has drifted even when no row looks wrong.
 
-**Ranges you would bet on.** Set each width from the measured error of that proxy on companies that report, as done here for shipping, gas utilities and hotels. A year later, check what share of newly published figures fell inside: an 80% range should catch about 80%, and the fix for a miss is to the proxy's width, not to single rows.
+**Ranges you would bet on.** Set each width from the measured error of that proxy on companies that report. Mine held 8 of 11 test companies, and all three misses were companies more extreme than every peer, which a range spanning the peers cannot reach. A year later, check what share of newly published figures fell inside: an 80% range should catch about 80%, and the fix for a miss is to the proxy's width, not to single rows.

@@ -86,6 +86,9 @@ def readme_checks(rows, readme):
     ]:
         m = re.search(figure, source)
         check(m is not None and m.group(1) in readme, f"README does not show {name} {m.group(1) if m else '?'}")
+    bt = re.search(r"true figure: (\d+) of (\d+)", (OUT / "backtest.txt").read_text())
+    check(bt is not None and f"On the {bt.group(2)} companies used to test the proxies, the ranges held the true figure {bt.group(1)} times" in readme,
+          "README backtest coverage disagrees with output/backtest.txt")
     check(not re.search("[\\u2013\\u2014]", readme), "README contains dashes")
 
 
