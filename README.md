@@ -60,7 +60,7 @@ Three proxies were tested on companies that report. The shipping rate from two c
 
 I would ship part of it, labelled. The 10 revenue and 9 headcount figures from filings can go to the client's analyst today. I would hold back the MSC and Drury estimates, which rest on peer and segment data and are good for a tier rather than a price, and the rows where I chose the scope, such as Siemens Energy and MSC, because nobody yet knows which entity signed. Most of this file's error is scope, not arithmetic.
 
-My checks cannot see whether a match is the company on the contract, or errors my sources share, since three Romanian sites copy one ministry file. They can show age but not fix it: five rows hold a figure over 18 months old. Beyond the three tests, my range widths are judgment. Next, in order of value: ask the client for each contract's counterparty and who pays today; refresh the stale rows; match the UK licensees to the bulk accounts; test the remaining proxies, including on subsidiaries; and draw Part 5 from capacity registers instead of activity codes.
+My checks cannot see whether a match is the company on the contract, or errors my sources share, since three Romanian sites copy one ministry file. They can show age but not fix it: five rows hold a figure over 18 months old. Beyond the three tests, my range widths are judgment. Next, in order of value: ask the client for each contract's counterparty and who pays today; refresh the stale rows; match the UK licensees to the bulk accounts; test the remaining proxies, including on subsidiaries; and draw Part 5 from capacity registers instead of activity codes, starting with a data request to the road transport authority for vehicle counts.
 
 ## Part 4: The room
 
@@ -78,7 +78,7 @@ The proxy is capacity times peer revenue per unit, which only works where size i
 | Share of the living register | **8.8%** of 1,747,958 |
 | Largest industries | Road transport 104,216, restaurants and bars 31,201, accommodation 15,276 |
 
-Checked against the tourism ministry's list, only 45.5% of the line's accommodation companies have a findable room count, and the line misses over half of the listed operators, so a register beats activity codes wherever one exists. Road transport, two thirds of the line, is untested. Code in [code/register.py](code/register.py); working in [NOTES.md](NOTES.md).
+Checked against the tourism ministry's list, only 45.5% of the line's accommodation companies have a findable room count, and the line misses over half of the listed operators, so a register beats activity codes wherever one exists. Road transport, two thirds of the line, cannot be sized from public data: the road transport authority's register lists 53,826 licensed operators with no vehicle counts, so at most half of the line's 104,216 road transport companies hold a licence at all. Code in [code/register.py](code/register.py); working in [NOTES.md](NOTES.md).
 
 ## Cut list
 
@@ -86,7 +86,7 @@ Checked against the tourism ministry's list, only 45.5% of the line's accommodat
 - I did not take the other 77 rows, which would add volume rather than lessons, or the quant route, which cannot see the sample's traps.
 - I did not open every primary document; figures from press coverage of a filing are labelled that way.
 - Three proxies are tested; the rest of the range widths are judgment.
-- I measured the UK headcount tag on three days of bulk accounts rather than the whole archive, and did not check the Romanian vehicle register; both are next steps.
+- I measured the UK headcount tag on three days of bulk accounts rather than the whole archive. I did not scrape the Romanian road transport register, because its robots.txt disallows automated access; matching it needs the authority's permission.
 
 ## Debate topics
 
