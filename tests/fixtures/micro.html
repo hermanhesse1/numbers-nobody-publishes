@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ix="http://www.xbrl.org/2013/inlineXBRL"
+      xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:xbrldi="http://xbrl.org/2006/xbrldi"
+      xmlns:core="http://xbrl.frc.org.uk/fr/2023-01-01/core" xmlns:bus="http://xbrl.frc.org.uk/cd/2023-01-01/business"
+      xmlns:ixt2="http://www.xbrl.org/inlineXBRL/transformation/2011-07-31">
+<head><title>Micro accounts</title></head>
+<body>
+<ix:header><ix:resources>
+  <xbrli:context id="cur"><xbrli:entity><xbrli:identifier scheme="http://www.companieshouse.gov.uk/">09689240</xbrli:identifier></xbrli:entity>
+    <xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>
+  <xbrli:context id="prev"><xbrli:entity><xbrli:identifier scheme="http://www.companieshouse.gov.uk/">09689240</xbrli:identifier></xbrli:entity>
+    <xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>
+  <xbrli:context id="cur-seg"><xbrli:entity><xbrli:identifier scheme="http://www.companieshouse.gov.uk/">09689240</xbrli:identifier>
+    <xbrli:segment><xbrldi:explicitMember dimension="core:Segment">core:Other</xbrldi:explicitMember></xbrli:segment></xbrli:entity>
+    <xbrli:period><xbrli:startDate>2026-01-01</xbrli:startDate><xbrli:endDate>2026-06-30</xbrli:endDate></xbrli:period></xbrli:context>
+</ix:resources></ix:header>
+<p>Average employees: <ix:nonFraction name="core:AverageNumberEmployeesDuringPeriod" contextRef="prev" unitRef="pure" decimals="0">11</ix:nonFraction>
+and <ix:nonFraction name="core:AverageNumberEmployeesDuringPeriod" contextRef="cur" unitRef="pure" decimals="0">13</ix:nonFraction>
+and <ix:nonFraction name="core:AverageNumberEmployeesDuringPeriod" contextRef="cur-seg" unitRef="pure" decimals="0">99</ix:nonFraction></p>
+<p>Creditors <ix:nonFraction name="core:Creditors" contextRef="cur" unitRef="GBP" decimals="0" scale="3" format="ixt2:numdotdecimal">1,234.5</ix:nonFraction></p>
+<p>Loss <ix:nonFraction name="core:ProfitLoss" contextRef="cur" unitRef="GBP" decimals="0" sign="-" format="ixt2:numdotdecimal">2,000</ix:nonFraction></p>
+<p>Provisions <ix:nonFraction name="core:Provisions" contextRef="cur" unitRef="GBP" decimals="0" format="ixt2:zerodash">-</ix:nonFraction></p>
+<p>Dormant: <ix:nonNumeric name="bus:EntityDormantTruefalse" contextRef="cur">false</ix:nonNumeric></p>
+</body></html>

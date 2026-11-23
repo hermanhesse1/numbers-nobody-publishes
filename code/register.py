@@ -29,6 +29,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from validate import SchemaError, require_columns
+
 ROOT = Path(__file__).resolve().parents[1]
 D = ROOT / "big_data" / "register"
 SITUR = ROOT / "big_data" / "tourism" / "situr_cazari.csv"
@@ -59,14 +61,26 @@ GROUPS = {
 CAPACITY = {code: group for group, (codes, _) in GROUPS.items() for code in codes}
 
 
+SCHEMAS = {
+    "od_firme.csv": ["COD_INMATRICULARE", "CUI"],
+    "od_stare_firma.csv": ["COD_INMATRICULARE", "COD"],
+    "od_caen_autorizat.csv": ["COD_INMATRICULARE", "COD_CAEN_AUTORIZAT", "VER_CAEN_AUTORIZAT"],
+}
+SITUR_ROOMS, SITUR_CUI = "Număr spații", "Cod Unic Înregistrare"
+
+
 def read(name, **kw):
-    return pd.read_csv(D / name, sep="^", dtype=str, encoding="utf-8-sig",
-                       keep_default_na=False, on_bad_lines="skip", **kw)
+    opts = dict(sep="^", dtype=str, encoding="utf-8-sig", keep_default_na=False)
+    require_columns(pd.read_csv(D / name, nrows=0, **opts).columns, SCHEMAS[name], name)
+    return pd.read_csv(D / name, on_bad_lines="skip", **opts, **kw)
 
 
 def main():
     # --- living companies --------------------------------------------------
     nom = pd.read_csv(D / "nomenclator_stari_firma.csv", sep="|", dtype=str, encoding="cp1250")
+    require_columns(nom.columns, ["COD", "DENUMIRE"], "nomenclator_stari_firma.csv")
+    if OPERATING not in set(nom["COD"]):
+        raise SchemaError(f"status code {OPERATING} is no longer in the status list")
     dead_codes = set(nom.loc[nom["DENUMIRE"].str.lower().apply(
         lambda s: any(w in s for w in DEAD_WORDS)), "COD"])
 
@@ -121,10 +135,15 @@ def main():
 
 def check_rooms(firme, living, inside, main_group):
     # Ministry of Tourism list of classified units, exported from se.situr.gov.ro.
-    rows = list(csv.reader(open(SITUR, encoding="utf-8")))[2:]
+    rows = list(csv.reader(open(SITUR, encoding="utf-8")))
+    header = [h.strip() for h in rows[1]]
+    require_columns(header, [SITUR_ROOMS, SITUR_CUI], SITUR.name)
+    i_rooms, i_cui = header.index(SITUR_ROOMS), header.index(SITUR_CUI)
     rooms = {}
-    for r in rows:
-        cui, n = r[15].strip(), r[3].strip()
+    for r in rows[2:]:
+        if len(r) <= max(i_rooms, i_cui):
+            continue
+        cui, n = r[i_cui].strip(), r[i_rooms].strip()
         if cui.isdigit() and n.isdigit() and int(n) > 0:
             rooms[cui] = rooms.get(cui, 0) + int(n)
     listed = set(rooms)

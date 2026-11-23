@@ -4,29 +4,30 @@ Can revenue and headcount be produced, with evidence that survives the client's 
 
 ## Repo layout
 
-- `data/`: the client's list, my tagged version and the Part 1 matching file.
+- `data/`: the client's list, my tagged version, the Part 1 matching file, every proxy assumption with its source in `proxy_inputs.csv`, the companies the proxies were tested on in `proxy_tests.csv`, and `manifest.csv` with the URL, size and SHA-256 of each large input.
 - `output/licensee_sizes.xlsx`: the file I would send the client, built by `code/build_workbook.py`.
-- `output/sample_estimates.csv`: the same data as CSV, built by `code/estimates.py`, which holds every input, source and derivation.
+- `output/sample_estimates.csv`: the same data as CSV, built by `code/estimates.py`.
 - `code/register.py` and `output/register_counts.txt`: the Part 5 counts.
 - `code/uk_accounts.py` and `output/uk_accounts_counts.txt`: the measured reach of the UK headcount tag.
-- `code/uk_licensees.py` and `output/uk_licensees.csv`: the same tag read automatically for the eight UK licensees.
-- `code/backtest.py` and `output/backtest.txt`: how often the proxy ranges hold the true figure on companies that report.
-- `code/check.py`: checks every range, date flag and source in the outputs, and every README figure against the outputs.
-- [NOTES.md](NOTES.md): the full proxy ledger, both proxy tests and how the Part 5 line was drawn.
-- `big_data/` is ignored by git; Part 5 expects the ONRC register files in `big_data/register/`, the tourism ministry's accommodation list, exported from se.situr.gov.ro as CSV, in `big_data/tourism/`, and Companies House daily bulk accounts zips in `big_data/ch/`.
+- `code/uk_licensees.py` and `output/uk_licensees.csv`: the same tag read for the eight UK licensees.
+- `code/backtest.py` and `output/backtest.txt`: how often the proxy ranges hold the true figure.
+- `code/ixbrl.py`: an XML parser for UK electronic accounts. `code/validate.py`: checks on currencies, registry identifiers with their check digits, dates, ranges and the layout of external files.
+- `code/check.py`: checks the outputs, and every README figure against them. `tests/`: unit and integration tests.
+- [NOTES.md](NOTES.md): the full proxy ledger, the proxy tests and how the Part 5 line was drawn.
 
 ## How to run
 
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
+.venv/bin/python -m pytest -q tests
 .venv/bin/python code/estimates.py
 .venv/bin/python code/build_workbook.py
 .venv/bin/python code/backtest.py > output/backtest.txt
 .venv/bin/python code/check.py
 ```
 
-`code/uk_licensees.py` reads the public Companies House site and needs no key. `code/register.py` and `code/uk_accounts.py` run the same way once their input files are in `big_data/`. All of them were rerun from a clean environment and reproduce the committed outputs exactly.
+GitHub Actions runs the same steps on every push. `code/uk_licensees.py` reads the public Companies House site and needs no key. `code/register.py` and `code/uk_accounts.py` need the large inputs in `big_data/`, which git ignores: `code/fetch_data.py --download` fetches them and checks each against the manifest. The Romanian register files are overwritten by each new snapshot and Companies House keeps a daily file for only 60 days, so a checksum mismatch means a newer version, not a broken one. All scripts were rerun from a clean environment and reproduce the committed outputs exactly.
 
 ## Sample
 
@@ -64,7 +65,7 @@ What survived, in brief; the full ledger with every discarded proxy is in [NOTES
 
 | Proxy | Verdict | Reach at scale |
 |---|---|---|
-| UK iXBRL headcount tag in micro accounts | Best find: a reported headcount where turnover is hidden | Measured on 35,144 filings from three days of the free bulk download: 88.5% carry it, 61.4% with staff above zero, while only 1.0% report turnover. About 1.5 million companies a year. Read automatically for the UK licensees: four of the five micro bakeries report a headcount |
+| UK iXBRL headcount tag in micro accounts | Best find: a reported headcount where turnover is hidden | Measured on 35,144 filings from three days of the free bulk download: 89.0% carry it, 61.7% with staff above zero, while only 1.0% report turnover. About 1.5 million companies a year. Read automatically for the UK licensees: four of the five micro bakeries report a headcount |
 | Capacity × revenue per unit at listed peers | MSC about $68bn, Drury about $940m | About 154,000 Romanian companies; see Part 5 |
 | Customers per employee at gas utilities | Replaced by Brooklyn Union's own filing | Hundreds per country |
 | LinkedIn-based headcount trackers | Kept only where two agree; wrong for holdings | About 69 million company pages |

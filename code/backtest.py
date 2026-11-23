@@ -2,42 +2,46 @@
 
 Each proxy is rebuilt the way Part 2 builds it, applied to a company whose real
 figure is known, and scored on whether the range holds the truth and how far
-the point is off. Inputs are the ones documented in code/estimates.py.
+the point is off. Inputs come from data/proxy_inputs.csv and data/proxy_tests.csv.
 
 Run from the repo root:  python3 code/backtest.py
 """
+import csv
+from pathlib import Path
 from statistics import median
 
-# Shipping: 2024 revenue in USD bn and fleet capacity in million TEU.
-CARRIERS = {
-    "Hapag-Lloyd": (20.3, 2.346),
-    "Maersk": (37.4, 4.31),
-    "CMA CGM": (36.49, 3.85),
-    "COSCO": (31.1, 3.3),
-    "ONE": (19.2, 2.0),
-    "Evergreen": (12.7, 1.84),
-}
+from estimates import load_inputs
+from validate import require_columns
 
-# Gas utilities: customers and reported staff; ratio band from Spire, Atmos and Southwest Gas.
-GAS_RATIOS = (500, 635, 927)
-UTILITIES = {
-    "ONE Gas": (2_300_000, 3900),
-    "NW Natural": (800_000, 1400),
-    "Brooklyn Union Gas": (1_274_648, 1464),
-}
+ROOT = Path(__file__).resolve().parents[1]
+TESTS_FILE = ROOT / "data" / "proxy_tests.csv"
 
-# Hotels: rooms and 2024 revenue in USD m, priced with Drury's occupancy and rate band.
-HOTEL_INPUTS = {"low": (0.61, 128), "mid": (0.66, 140), "high": (0.75, 159)}
-HOTELS = {
-    "Apple Hospitality": (29_764, 1430),
-    "Summit": (14_553, 732),
-}
+
+def load_tests(path=TESTS_FILE):
+    with open(path, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        require_columns(reader.fieldnames, ["proxy", "company", "driver", "actual", "source"], path.name)
+        out = {}
+        for r in reader:
+            out.setdefault(r["proxy"], {})[r["company"]] = (float(r["driver"]), float(r["actual"]))
+    return out
+
+
+TESTS = load_tests()
+P = load_inputs()
+CARRIERS = TESTS["shipping"]
+UTILITIES = TESTS["gas"]
+HOTELS = TESTS["hotels"]
+GAS = P["kedny", "customers_per_employee"]
+GAS_RATIOS = (GAS["low"], GAS["mid"], GAS["high"])
+HOTEL_INPUTS = {k: (P["drury", "occupancy"][k], P["drury", "room_rate"][k]) for k in ("low", "mid", "high")}
+OTHER_SHARE = P["drury", "other_revenue_share"]["mid"]
 
 
 def shipping():
     out = []
-    rates = {k: rev / teu for k, (rev, teu) in CARRIERS.items()}
-    for name, (rev, teu) in CARRIERS.items():
+    rates = {k: rev / teu for k, (teu, rev) in CARRIERS.items()}
+    for name, (teu, rev) in CARRIERS.items():
         others = [r for k, r in rates.items() if k != name]
         out.append(("Shipping, revenue per TEU", name, median(others) * teu,
                     min(others) * teu, max(others) * teu, rev))
@@ -52,7 +56,7 @@ def gas():
 
 def hotels():
     def rev(rooms, occ, adr):
-        return rooms * 365 * occ * adr * 1.11 / 1e6
+        return rooms * 365 * occ * adr * (1 + OTHER_SHARE) / 1e6
     return [("Hotels, rooms x occupancy x rate", name, rev(rooms, *HOTEL_INPUTS["mid"]),
              rev(rooms, *HOTEL_INPUTS["low"]), rev(rooms, *HOTEL_INPUTS["high"]), actual)
             for name, (rooms, actual) in HOTELS.items()]

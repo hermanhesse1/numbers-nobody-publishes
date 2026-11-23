@@ -1,12 +1,15 @@
 daily files: 2026-10-22, 2026-11-20, 2026-11-21
 filings:                         35,144
-  with the headcount tag:        31,090 = 88.5%
-  with a headcount above zero:   21,573 = 61.4%
-  with turnover reported:        357 = 1.0%
-  flagged dormant:               5,040 = 14.3%
+  with the headcount tag:        31,275 = 89.0%
+  with a headcount above zero:   21,701 = 61.7%
+  with turnover reported:        368 = 1.0%
+  flagged dormant:               5,047 = 14.4%
 headcount bands among tagged filings:
-  0, trading      8,722
-  1 to 9         19,737
-  10 to 49        1,554
-  50 to 249         254
+  0, trading      8,774
+  1 to 9         19,865
+  10 to 49        1,559
+  50 to 249         249
   250 or more        28
+headcounts read as displayed despite a scale attribute: 2,877 with scale -2, 11 with scale 3
+parsing: 0 unreadable, 0 read after repairing malformed markup
+skipped, not a filing: 66 .zip

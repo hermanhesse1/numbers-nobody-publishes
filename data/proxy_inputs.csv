@@ -1,0 +1,15 @@
+proxy,parameter,mid,low,high,unit,as_of,source
+msc,fleet_teu,5.95,5.95,5.95,million TEU,2024,"Alphaliner: 6.3m TEU in January 2025 after adding 0.69m during 2024, so about 5.95m on average"
+msc,revenue_per_teu,9050,7500,9600,USD per TEU,2024,"Median of six listed carriers in data/proxy_tests.csv; the band spans them, with Evergreen's undated capacity figure setting the floor"
+msc,cruise_passengers,4.6,4.6,4.6,million,2024,MSC Cruises 2024 passenger count
+msc,cruise_revenue_per_passenger,1.70,1.50,1.93,USD thousand,2024,"Carnival $25.0bn from 13.5m passengers, about $1,850; Royal Caribbean $16.5bn from 8.56m, about $1,930. MSC sells cheaper European cruises, so the midpoint sits below both; the floor is an assumption"
+msc,other_revenue,6.0,3.5,10.0,USD bn,2024,"Terminals, MEDLOG, Africa Global Logistics and car carriers. Bolloré's African operations turned over about EUR 3.1bn in 2021 (inforMARE, single source); the rest is unsourced, so the band is wide on purpose"
+drury,hotels,140,130,150,hotels,2025,"Company says more than 150, which may include hotels being built; Lodging Magazine counts 130 operating"
+drury,rooms_per_hotel,180,160,210,rooms,2025,"Lodging Development sample of 50 properties averages 208 rooms but leans to the newer Plaza hotels; the 160 floor is an assumption"
+drury,occupancy,0.66,0.61,0.75,share,2024,"Upper midscale 61.4% (Colliers, Q4 2023); all US hotels 63.0% (CoStar, 2024); Apple Hospitality and Summit 74% to 75% (2024)"
+drury,room_rate,140,128,159,USD per night,2024,"Upper midscale $128.26 (Colliers, Q4 2023); all US hotels $158.67 (CoStar, 2024)"
+drury,other_revenue_share,0.11,0.11,0.11,share of rooms revenue,2024,Measured at Apple Hospitality and Summit
+kedny,customers,1274648,1274648,1274648,customers,2023,Brooklyn Union Gas annual report to the New York PSC
+kedny,customers_per_employee,635,500,927,customers,2024,"Atmos Energy 3.3m customers and 5,200 staff (635); Spire 1.74m and 3,475 (500); Southwest Gas 2.26m and 2,435 (927)"
+margot,employees,13,13,13,people,2025,Average employees in the FY2025 micro accounts (iXBRL AverageNumberEmployeesDuringPeriod)
+margot,revenue_per_employee,0.048,0.035,0.061,GBP m,2024,"Greggs GBP 2.01bn with about 33,000 staff, roughly GBP 61,000 each, sets the top; the floor and midpoint are assumptions"

@@ -11,9 +11,13 @@ import csv
 from datetime import date
 from pathlib import Path
 
+from validate import (check_as_of, check_band, check_currency, check_licensee_id, check_registration_ids,
+                      require_columns)
+
 ROOT = Path(__file__).resolve().parents[1]
 MATCH_FILE = ROOT / "data" / "sample_matching.csv"
 OUT_FILE = ROOT / "output" / "sample_estimates.csv"
+INPUTS_FILE = ROOT / "data" / "proxy_inputs.csv"
 
 # Approximate average rates for 2024 and 2025, used ONLY for the usd_m column, which
 # exists to sort rows into price tiers. They are rounded and unsourced: replace
@@ -51,6 +55,51 @@ def months_old(d):
 
 def band(mid, low, high):
     return {"mid": mid, "low": low, "high": high}
+
+
+# ---------------------------------------------------------------- proxy maths
+def load_inputs(path=INPUTS_FILE):
+    with open(path, newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    require_columns(rows[0].keys() if rows else [], ["proxy", "parameter", "mid", "low", "high", "source"], path.name)
+    out = {}
+    for r in rows:
+        if not r["source"].strip():
+            raise ValueError(f"{r['proxy']}.{r['parameter']} has no source")
+        b = band(float(r["mid"]), float(r["low"]), float(r["high"]))
+        check_band(b["mid"], b["low"], b["high"], f"{r['proxy']}.{r['parameter']}")
+        out[(r["proxy"], r["parameter"])] = b
+    return out
+
+
+P = load_inputs()
+
+
+def msc_group_revenue(p=P):
+    """Container fleet x revenue per TEU + cruise passengers x revenue each + other, in USD bn."""
+    teu, rate = p["msc", "fleet_teu"], p["msc", "revenue_per_teu"]
+    pax, per_pax = p["msc", "cruise_passengers"], p["msc", "cruise_revenue_per_passenger"]
+    other = p["msc", "other_revenue"]
+    return {k: teu["mid"] * rate[k] / 1000 + pax["mid"] * per_pax[k] + other[k] for k in ("mid", "low", "high")}
+
+
+def drury_revenue(p=P):
+    """Hotels x rooms x 365 x occupancy x room rate x (1 + other revenue), in USD m."""
+    share = p["drury", "other_revenue_share"]["mid"]
+    return {k: p["drury", "hotels"][k] * p["drury", "rooms_per_hotel"][k] * 365 * p["drury", "occupancy"][k]
+            * p["drury", "room_rate"][k] * (1 + share) / 1e6 for k in ("mid", "low", "high")}
+
+
+def kedny_employees(p=P):
+    """Brooklyn Union Gas staff as customers / customers per employee; kept as a test record."""
+    c, ratio = p["kedny", "customers"]["mid"], p["kedny", "customers_per_employee"]
+    return band(c / ratio["mid"], c / ratio["high"], c / ratio["low"])
+
+
+def margot_revenue(p=P):
+    """Margot Bakery revenue in GBP m as reported employees x revenue per employee."""
+    staff, per = p["margot", "employees"]["mid"], p["margot", "revenue_per_employee"]
+    return {k: staff * per[k] for k in ("mid", "low", "high")}
 
 
 # ---------------------------------------------------------------- proxy maths
@@ -316,6 +365,27 @@ COLS = ["id", "licensee_name", "matched_entity", "outcome_bucket", "size_scope",
         "sources", "derivation", "how_wrong_could_this_be", "client_action"]
 
 
+def validate_rows(rows, matches, as_of=None):
+    as_of = AS_OF if as_of is None else as_of
+    for r in rows:
+        check_licensee_id(r["id"])
+        if r["id"] not in matches:
+            raise ValueError(f"{r['id']} is estimated but not in {MATCH_FILE.name}")
+        if r["rev"]:
+            check_currency(r["cur"], USD_PER)
+        for key in ("rev", "emp"):
+            if r[key]:
+                check_band(r[key]["mid"], r[key]["low"], r[key]["high"], f"{r['id']} {key}")
+        for d in as_of.get(r["id"], (None, None)):
+            check_as_of(d, REFERENCE_DATE)
+
+
+def validate_matches(matches):
+    for mid, m in matches.items():
+        check_licensee_id(mid)
+        check_registration_ids(m["registration_id"])
+
+
 def fmt(x):
     # Plain numbers with no thousands separators, so spreadsheets read them as numbers.
     if x is None:
@@ -325,7 +395,11 @@ def fmt(x):
 
 def main():
     with open(MATCH_FILE, newline="", encoding="utf-8") as f:
-        matches = {r["id"]: r for r in csv.DictReader(f)}
+        reader = csv.DictReader(f)
+        require_columns(reader.fieldnames, ["id", "licensee_name", "matched_entity", "outcome_bucket", "registration_id"], MATCH_FILE.name)
+        matches = {r["id"]: r for r in reader}
+    validate_matches(matches)
+    validate_rows(ROWS, matches)
 
     out = []
     by_id = {r["id"]: r for r in ROWS}
@@ -374,7 +448,7 @@ def main():
         for row in sorted(out, key=lambda r: r["id"]):
             w.writerow({c: row.get(c, "") for c in COLS})
 
-    print(f"wrote {len(out)} rows -> {OUT_FILE.relative_to(ROOT)}")
+    print(f"wrote {len(out)} rows -> {OUT_FILE.relative_to(ROOT) if OUT_FILE.is_relative_to(ROOT) else OUT_FILE}")
     print(f"MSC revenue USD bn: {msc}")
     print(f"Drury revenue USD m: {drury}")
     print(f"KEDNY employees: {kedny}")
