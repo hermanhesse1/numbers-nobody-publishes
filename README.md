@@ -60,13 +60,17 @@ What survived, in brief; the full ledger with every discarded proxy is in [NOTES
 | LinkedIn-based headcount trackers | Kept only where two agree; wrong for holdings | About 69 million company pages |
 | Lead-generation database revenue | Discarded: Drury at $5bn means over $500 a room a night | Everywhere, which is the danger |
 
-Three proxies were tested on companies that report. The shipping rate from two carriers under-predicted three others by 8 to 10%, so MSC now uses a six-carrier median. The gas ratio came within 10% on two standalone utilities but was 37% too high on Brooklyn Union Gas, whose filing shows 1,464 staff, because its shared work sits in a separate National Grid company. A ratio learned from standalone firms overstates a subsidiary, which is the Part 1 scope trap showing up again inside a proxy. The hotel formula came within 7% on Apple Hospitality and Summit with their own occupancy and room rates, but about 30% low with Drury's segment inputs, so for Drury the risk sits in the inputs.
+Three proxies were tested on companies that report. The shipping rate from two carriers under-predicted three others by 8 to 10%, so MSC now uses a six-carrier median. The gas ratio came within 10% on two standalone utilities but was 37% too high on Brooklyn Union Gas, whose filing shows 1,464 staff, because its shared work sits in a separate National Grid company. A ratio learned from standalone firms overstates a subsidiary, which is the Part 1 scope trap showing up again inside a proxy. The hotel formula came within 7% on Apple Hospitality and Summit with their own occupancy and room rates, but 22% and 26% low with Drury's segment inputs, so for Drury the risk sits in the inputs.
 
 ## Part 3: The call
 
-We would ship part of it, labelled. The 10 revenue and 9 headcount figures from filings can go to the client's analyst today. We would hold back the MSC and Drury estimates, which rest on peer and segment data and are good for a tier rather than a price, and the rows where we chose the scope, such as Siemens Energy and MSC, because nobody yet knows which entity signed.
+Yes, the client can use these numbers today, as long as they keep the labels. Working from the data we were given, this is as close as general logical judgement can get, and every figure says whether it comes from a filing, from the company itself or from an estimate. As a safety net we backtested the proxies, and the next step is simply asking around: checking the shakiest figures with the client and, where possible, with the licensee.
 
-Our checks cannot see whether a match is the company on the contract, or errors our sources share, since three Romanian sites copy one ministry file. They can show age but not fix it: five rows hold a figure over 18 months old. On the 11 companies used to test the proxies, the ranges held the true figure 8 times, so they behave like 70% ranges, not the 90% a client would assume. Next, in order of value: ask the client who signed each contract and who pays today, refresh the stale rows, and test the remaining proxies, including on subsidiaries.
+The one estimate we would hold back is Drury. We see the hotel business as unstable, and this is the sketchiest number in the file: its range runs from $660m to $1.52bn, and when we priced two listed hotel owners with Drury's inputs, the formula came out 22% and 26% too low.
+
+Our checks have limits. They cannot see whether a match is the company on the contract, and they can show age but not fix it: five rows hold a figure over 18 months old. On the 11 companies used to test the proxies, the ranges held the true figure 8 times, so they behave like 70% ranges, not 90% ones.
+
+The first thing we would ask the client for is each licensee's payment history, meaning when they pay and how regularly, which shows recurrence and habit, together with who signed each contract. Both show who is actually responsible for the licence and give us more avenues for future research.
 
 ## Part 4: The room
 
