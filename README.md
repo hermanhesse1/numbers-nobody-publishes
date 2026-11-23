@@ -16,7 +16,7 @@ make setup
 make all
 ```
 
-`make test` runs the tests alone, and GitHub Actions runs everything on every push. Part 5 and the UK accounts count need the large inputs in `big_data/`, which git ignores: `code/fetch_data.py --download` fetches them and checks each against the manifest. All scripts reproduce the committed outputs exactly from a clean environment.
+`make test` runs the tests alone. Part 5 and the UK accounts count need the large inputs in `big_data/`, which git ignores: `code/fetch_data.py --download` fetches them and checks each against the manifest. All scripts reproduce the committed outputs exactly from a clean environment.
 
 ## Sample
 
