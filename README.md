@@ -1,22 +1,6 @@
 # Estimating revenue and headcount for a licensee list
 
-Can revenue and headcount be produced for these 100 names, typed in by sales reps, with evidence that survives the client's analyst? We would say yes, but not in the same way for every name. With plenty of research and some mathematical modelling, we built a framework that shows the client which numbers they can rely on and which they cannot. For 10 of the 23 companies in our sample the figure comes straight from a filing, for a few more it is an estimate good enough to set a price tier, and for the rest it is a gap with a reason attached. At the start, the gap between what we had, a list of names, and what we had to fill felt too large. Most of it turned out to be matching: working out which legal company a name on a contract actually means.
-
-## Repo layout
-
-- `output/licensee_sizes.xlsx`: the file we would send the client. `output/sample_estimates.csv` holds the same data.
-- `data/`: the client's list, our tagged version, the Part 1 matching file, every proxy assumption with its source, the companies the proxies were tested on, and a manifest of the large inputs with sizes and checksums.
-- `code/`: one script per part, plus a parser for UK electronic accounts, input validation and `check.py`, which checks every figure in this README against the outputs. `tests/` holds the unit and integration tests.
-- [NOTES.md](NOTES.md): the full proxy ledger, the proxy tests, the parser findings and how the Part 5 line was drawn.
-
-## How to run
-
-```bash
-make setup
-make all
-```
-
-`make test` runs the tests alone. Part 5 and the UK accounts count need the large inputs in `big_data/`, which git ignores: `code/fetch_data.py --download` fetches them and checks each against the manifest. All scripts reproduce the committed outputs exactly from a clean environment.
+Can revenue and headcount be produced for these 100 names, typed in by sales reps, with evidence that survives the client's analyst? We would say yes, but not in the same way for every name. With plenty of research and some mathematical modelling, we built a framework that shows the client which numbers they can rely on and which they cannot. For 10 of the 23 companies in our sample the figure comes straight from a filing, for a few more it is an estimate good enough to set a price tier, and for the rest it is a blank with a reason attached. At the start, the gap between what we had, a list of names, and what we had to fill felt too large. Most of it turned out to be matching: working out which legal company a name on a contract actually means.
 
 ## Sample
 
@@ -115,3 +99,19 @@ If we started again tomorrow, we would spend less time tied up in the detail, so
 **Knowing the dataset is wrong at scale.** Filers and listed companies are a labelled subset to score every recipe on, and internal contradictions, such as a subsidiary larger than its parent, flag the rest. A rising disagreement rate between independent sources means the pipeline has drifted even when no row looks wrong.
 
 **Ranges you would bet on.** Set each width from the measured error of that proxy on companies that report; ours held 8 of 11, and every miss was a company more extreme than all its peers. A year later, check what share of newly published figures fell inside, since an 80% range should catch about 80%. When it does not, widen the proxy's range rather than patching single rows.
+
+## Repo layout
+
+- `output/licensee_sizes.xlsx`: the file we would send the client. `output/sample_estimates.csv` holds the same data.
+- `data/`: the client's list, our tagged version, the Part 1 matching file, every proxy assumption with its source, the companies the proxies were tested on, and a manifest of the large inputs with sizes and checksums.
+- `code/`: one script per part, plus a parser for UK electronic accounts, input validation and `check.py`, which checks every figure in this README against the outputs. `tests/` holds the unit and integration tests.
+- [NOTES.md](NOTES.md): the full proxy ledger, the proxy tests, the parser findings and how the Part 5 line was drawn.
+
+## How to run
+
+```bash
+make setup
+make all
+```
+
+`make test` runs the tests alone. Part 5 and the UK accounts count need the large inputs in `big_data/`, which git ignores: `code/fetch_data.py --download` fetches them and checks each against the manifest. All scripts reproduce the committed outputs exactly from a clean environment.
