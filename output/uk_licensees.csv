@@ -1,0 +1,9 @@
+id,licensee_name,company_number,status,period_end,employees,turnover_gbp_m,note
+IN-005,SIEMENS MOBILITY LIMITED,00016033,Active,,,,accounts filed as PDF only; read by hand
+IN-023,Toyota Motor Manufacturing (UK) Limited,02352348,Active,,,,accounts filed as PDF only; read by hand
+IN-060,OLIVIER'S BAKERY LTD,07675953,Active,2025-05-31,24,,headcount reported; turnover not disclosed
+IN-061,MARGOT BAKERY LIMITED,09689240,Active,2025-12-31,13,,headcount reported; turnover not disclosed
+IN-062,ZAITUN BAKERY LTD,14331415,Active,2025-09-30,0,,headcount reported; turnover not disclosed
+IN-072,Currys PC World,07105905,Active,,,,accounts filed as PDF only; read by hand
+IN-083,LEVE BAKERY LTD,13943554,Dissolved,2023-02-28,5,,headcount reported; turnover not disclosed
+IN-087,BAKERY BAKERY LTD,09222489,Dissolved,2017-09-30,,,dormant accounts

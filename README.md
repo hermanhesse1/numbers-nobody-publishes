@@ -1,6 +1,6 @@
 # Estimating revenue and headcount for a licensee list
 
-Can revenue and headcount be produced, with evidence that survives the client's analyst, for 100 licensee names typed in by sales reps? For about ten of the 23 companies in my sample the answer is yes, straight from a filing; for a few more, yes as an estimate good enough to set a price tier; for the rest, a gap with a reason attached. Most of the risk is not in the arithmetic but in deciding which legal entity a name on a contract means.
+Can revenue and headcount be produced, with evidence that survives the client's analyst, for 100 licensee names typed in by sales reps? For 10 of the 23 companies in my sample the answer is yes, straight from a filing; for a few more, yes as an estimate good enough to set a price tier; for the rest, a gap with a reason attached. Most of the risk sits in deciding which legal entity a name on a contract means.
 
 ## Repo layout
 
@@ -9,8 +9,10 @@ Can revenue and headcount be produced, with evidence that survives the client's 
 - `output/sample_estimates.csv`: the same data as CSV, built by `code/estimates.py`, which holds every input, source and derivation.
 - `code/register.py` and `output/register_counts.txt`: the Part 5 counts.
 - `code/uk_accounts.py` and `output/uk_accounts_counts.txt`: the measured reach of the UK headcount tag.
+- `code/uk_licensees.py` and `output/uk_licensees.csv`: the same tag read automatically for the eight UK licensees.
+- `code/check.py`: checks every range, date flag and source in the outputs, and every README figure against the outputs.
 - [NOTES.md](NOTES.md): the full proxy ledger, both proxy tests and how the Part 5 line was drawn.
-- `big_data/` is ignored by git; Part 5 expects the ONRC register files in `big_data/register/` the tourism ministry's accommodation list, exported from se.situr.gov.ro as CSV, in `big_data/tourism/`, and Companies House daily bulk accounts zips in `big_data/ch/`.
+- `big_data/` is ignored by git; Part 5 expects the ONRC register files in `big_data/register/`, the tourism ministry's accommodation list, exported from se.situr.gov.ro as CSV, in `big_data/tourism/`, and Companies House daily bulk accounts zips in `big_data/ch/`.
 
 ## How to run
 
@@ -19,9 +21,10 @@ python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 .venv/bin/python code/estimates.py
 .venv/bin/python code/build_workbook.py
+.venv/bin/python code/check.py
 ```
 
-`code/register.py` and `code/uk_accounts.py` run the same way once their input files are in `big_data/`. All four were rerun from a clean environment and reproduce the committed outputs exactly.
+`code/uk_licensees.py` reads the public Companies House site and needs no key. `code/register.py` and `code/uk_accounts.py` run the same way once their input files are in `big_data/`. All of them were rerun from a clean environment and reproduce the committed outputs exactly.
 
 ## Sample
 
@@ -59,7 +62,7 @@ What survived, in brief; the full ledger with every discarded proxy is in [NOTES
 
 | Proxy | Verdict | Reach at scale |
 |---|---|---|
-| UK iXBRL headcount tag in micro accounts | Best find: a reported headcount where turnover is hidden | Measured on 35,144 filings from three days of the free bulk download: 88.5% carry it, 61.4% with staff above zero, while only 1.0% report turnover. About 1.5 million companies a year |
+| UK iXBRL headcount tag in micro accounts | Best find: a reported headcount where turnover is hidden | Measured on 35,144 filings from three days of the free bulk download: 88.5% carry it, 61.4% with staff above zero, while only 1.0% report turnover. About 1.5 million companies a year. Read automatically for the UK licensees: four of the five micro bakeries report a headcount |
 | Capacity × revenue per unit at listed peers | MSC about $68bn, Drury about $940m | About 154,000 Romanian companies; see Part 5 |
 | Customers per employee at gas utilities | Replaced by Brooklyn Union's own filing | Hundreds per country |
 | LinkedIn-based headcount trackers | Kept only where two agree; wrong for holdings | About 69 million company pages |
@@ -69,15 +72,15 @@ Three proxies were tested on companies that report. The shipping rate from two c
 
 ## Part 3: The call
 
-I would ship part of it, labelled. The 10 revenue and 9 headcount figures from filings can go to the client's analyst today. I would hold back the MSC and Drury estimates, which rest on peer and segment data and are good for a tier rather than a price, and the rows where I chose the scope, such as Siemens Energy and MSC, because nobody yet knows which entity signed. Most of this file's error is scope, not arithmetic.
+I would ship part of it, labelled. The 10 revenue and 9 headcount figures from filings can go to the client's analyst today. I would hold back the MSC and Drury estimates, which rest on peer and segment data and are good for a tier rather than a price, and the rows where I chose the scope, such as Siemens Energy and MSC, because nobody yet knows which entity signed.
 
-My checks cannot see whether a match is the company on the contract, or errors my sources share, since three Romanian sites copy one ministry file. They can show age but not fix it: five rows hold a figure over 18 months old. Beyond the three tests, my range widths are judgment. Next, in order of value: ask the client for each contract's counterparty and who pays today; refresh the stale rows; match the UK licensees to the bulk accounts; test the remaining proxies, including on subsidiaries; and draw Part 5 from capacity registers instead of activity codes, starting with a data request to the road transport authority for vehicle counts.
+My checks cannot see whether a match is the company on the contract, or errors my sources share, since three Romanian sites copy one ministry file. They can show age but not fix it: five rows hold a figure over 18 months old. Beyond the three tests, my range widths are judgment. Next, in order of value: ask the client for each contract's counterparty and who pays today; refresh the stale rows; test the remaining proxies, including on subsidiaries; and draw Part 5 from capacity registers instead of activity codes, starting with a data request to the road transport authority for vehicle counts.
 
 ## Part 4: The room
 
-The licensee list goes stale, and both of the client's fears come from that. Sixteen of the 100 have changed what they are since 2020. Seven were absorbed into far larger groups, such as VMware into Broadcom and WK Kellogg into Ferrero: small-tier licences now inside multinationals. Six were carved out of parents, such as Sandoz from Novartis and Qnity from DuPont, so a licence signed by the parent may now cover a separate company that never paid. Three were renamed or disappeared, including Steyn Holding, which my own tags missed until a register check.
+The licensee list goes stale, and both of the client's fears come from that. Seventeen of the 100 have changed what they are since 2020. Seven were absorbed into far larger groups, such as VMware into Broadcom and WK Kellogg into Ferrero: small-tier licences now inside multinationals. Six were carved out of parents, such as Sandoz from Novartis and Qnity from DuPont, so a licence signed by the parent may now cover a separate company that never paid. Four were renamed or disappeared, including Steyn Holding, struck off in 2020, and Leve Bakery, dissolved in 2023, both of which my own tags missed until a register check.
 
-Each event is public and dated, and enterprise licences often carry a change-of-control clause, which makes it a moment to reprice on the client's terms rather than a renegotiation to win cold. Sixteen in six years is about 2.7% of the base a year; this list probably overstates the real rate, but even a third of it is a steady stream of triggers nobody is watching. Monitor licensees for corporate events, and reprice at the event rather than at renewal.
+Each event is public and dated, and enterprise licences often carry a change-of-control clause, which makes it a moment to reprice on the client's terms rather than a renegotiation to win cold. Seventeen in six years is about 2.8% of the base a year; this list probably overstates the real rate, but even a third of it is a steady stream of triggers nobody is watching. Monitor licensees for corporate events, and reprice at the event rather than at renewal.
 
 ## Part 5: The register
 
