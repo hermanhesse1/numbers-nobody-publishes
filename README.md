@@ -74,9 +74,11 @@ The first thing we would ask the client for is each licensee's payment history, 
 
 ## Part 4: The room
 
-The licensee list goes stale, and both of the client's fears come from that. Seventeen of the 100 have changed what they are since 2020. Seven were absorbed into far larger groups, such as VMware into Broadcom and WK Kellogg into Ferrero: small-tier licences now inside multinationals. Six were carved out of parents, such as Sandoz from Novartis and Qnity from DuPont, so a licence signed by the parent may now cover a separate company that never paid. Four were renamed or disappeared, including Steyn Holding, struck off in 2020, and Leve Bakery, dissolved in 2023, both of which our own tags missed until a register check.
+What surprised us most is how fast the list goes out of date. Seventeen of the 100 licensees have changed what they are since 2020. Seven were bought by much larger groups, such as VMware by Broadcom and WK Kellogg by Ferrero. Six were split off from their parents, such as Sandoz from Novartis and Qnity from DuPont. Four were renamed or disappeared, including Steyn Holding and Leve Bakery, which our own tags missed until we checked the registers. That is roughly 3% of the list every year. The real rate is probably lower, since this list was picked partly for its traps, but even a third of it is a steady stream that nobody is watching.
 
-Each event is public and dated, and enterprise licences often carry a change-of-control clause, which makes it a moment to reprice on the client's terms rather than a renegotiation to win cold. Seventeen in six years is about 2.8% of the base a year. This list probably overstates the real rate, but even a third of it is a steady stream of triggers nobody is watching. Monitor licensees for corporate events, and reprice at the event rather than at renewal.
+This touches both of the client's worries. A company that was small when it signed can now sit inside a multinational and still pay the small price, while a company split off from its parent may be using a licence it never paid for. Each of these events is public and dated, and enterprise licences often have a change-of-control clause, so the event itself is the best moment to reprice.
+
+What we would do is check the licensee list against the registers and the news every quarter, and reprice when the change happens rather than waiting for renewal. The payment history we asked for in Part 3 helps here too, because a change in who pays is often the first sign that the company behind a licence has changed.
 
 ## Part 5: The register
 
